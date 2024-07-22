@@ -1,0 +1,898 @@
+/* Reset default margins and paddings */
+body, html {
+    font-family: 'Montserrat', sans-serif; /* Change font-family to Montserrat */
+    margin: 0;
+    padding: 0;
+    background-color: #f0fef2; /* Background color */
+    color: #333;
+}
+
+header {
+    background-color: white; 
+    display: flex; 
+    position: sticky; 
+    top: 0; 
+    justify-content: space-between; 
+    align-items: center; 
+    box-shadow: 0 0.5px 2px rgba(0, 0, 0, 0.13); 
+    height: 88px; 
+    padding: 0 27px; 
+    border-radius: 0 0 10px 10px;
+    color: #333;
+    z-index: 1000; /* Higher z-index to ensure it stays on top */
+}
+.logo {
+    height: 200px; /* Increase the height to make the logo larger */
+    margin-right: -100px; /* Adjusted margin */
+    margin-left: -150px; /* Added margin-left */
+}
+
+.title-link {
+    text-decoration: none; /* Remove underline */
+}
+
+header h1 {
+    font-size: 36px;
+    margin: 0;
+    font-weight: bold;
+    font-family: "Bebas Neue", sans-serif; /* Add the font-family property */
+    color: #00796B; /* Primary color */
+}
+
+nav {
+    margin-left: auto; /* Aligns nav items to the right */
+}
+
+.nav {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    margin-right: 10px; /* Adjusted margin */
+    display: inline; /* Adjusted display to inline */
+}
+
+.nav-link {
+    color: #000; /* Black text color */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px; /* Increase font size */
+    font-family: 'Open Sans', 'Helvetica', sans-serif; /* Use Open Sans or Helvetica font */
+    transition: color 0.3s, transform 0.3s, text-shadow 0.3s; /* Smooth transition for color change, transform, and shadow */
+}
+
+.nav-link:hover {
+    color: #222; /* Darker text color on hover */
+    transform: scale(1.1); /* Scale the text slightly on hover */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Add a subtle shadow on hover */
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+    background-color: #00796B; /* Theme color */
+}
+
+.card-body {
+    border-radius: 0 0 10px 10px;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.form-control {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-control:focus {
+    border-color: #00796B; /* Highlight border on focus */
+    box-shadow: 0 0 5px rgba(0, 121, 107, 0.5); /* Add shadow on focus */
+}
+
+.btn-primary {
+    background-color: #009952; /* Theme color */
+    border: none;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #005c52; /* Darker theme color on hover */
+}
+
+.btn-stunning {
+    background-color: #00796B; /* Theme color */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-stunning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-stunning i {
+    margin-right: 5px;
+}
+
+/* Custom styles for Select button */
+.btn-select {
+    background-color: #00796B; /* Theme color */
+    color: #fff;
+    border: none;
+    font-weight: bold;
+}
+
+.btn-select:hover {
+    background-color: #005c52; /* Darker theme color on hover */
+}
+
+/* Sticky footer styles */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    padding-bottom: 80px; /* Adjusted height of the footer */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body takes full height of the viewport */
+}
+
+.container-fluid {
+    flex: 1;
+}
+
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    background: linear-gradient(120deg, #00796B, #009952); /* Matching gradient */
+    color: #fff;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Carousel styles */
+.carousel-section {
+    width: 100%; /* Set the width to 100% */
+    height: 550px; /* Set the fixed height */
+    overflow: hidden; /* Ensure the carousel is not taller than its container */
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    position: absolute; /* Position the buttons relative to the carousel section */
+    top: 50%; /* Align the buttons vertically in the middle */
+    transform: translateY(-50%); /* Adjust the vertical position */
+}
+
+.carousel-control-prev {
+    left: 0; /* Align the previous button to the left */
+}
+
+.carousel-control-next {
+    right: 0; /* Align the next button to the right */
+}
+
+.carousel-inner img {
+    max-width: 100%; /* Ensure the image does not exceed the width of the carousel */
+    height: auto; /* Let the height adjust automatically based on the width */
+    max-height: 100%; /* Ensure the image does not exceed the height of the carousel */
+    object-fit: contain; /* Maintain aspect ratio and fit the entire image within the carousel */
+}
+
+/* Product category items */
+.product-category-link-block {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.product-category-link-block:hover {
+    background-color: #f0f0f0; /* Light gray on hover */
+}
+
+.product-category-image-block img {
+    max-width: 100%;
+    height: auto;
+}
+
+.product-category-title {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+#sidebar {
+    position: fixed;
+    top: 88px; /* Adjust this value to be equal to the header height */
+    bottom: 0; /* Extend to the bottom of the viewport */
+    left: 0;
+    z-index: 999; /* Lower z-index than header but higher than other content */
+    padding: 20px 0; 
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    background: #ffffff; 
+    transition: width 0.2s;
+    width: 250px; 
+    overflow-x: hidden;
+}
+
+#sidebar .nav-link {
+    font-weight: 500;
+    color: #333; 
+    padding: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+    font-size: 18px; 
+    border-radius: 20px; 
+    margin: 5px 10px; 
+    font-family: 'Poppins', sans-serif; /* Font similar to the provided image */
+}
+
+#sidebar .nav-link img.sidebar-icon {
+    width: 40px; /* Increase icon size */
+    height: 40px; /* Increase icon size */
+    margin-right: 10px;
+}
+
+#sidebar .nav-link:hover {
+    background-color: #00796B; 
+    color: #fff; 
+}
+
+#sidebar .nav-link.active {
+    background-color: #00796B; 
+    color: #fff;
+}
+
+#sidebar .nav-link span {
+    display: inline-block;
+}
+
+/* Main content */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.main-content {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 120px; /* Add margin to the top for the gap */
+    margin-right: 20px; /* Add margin to the right for the gap */
+    margin-left: 270px; /* Adjust margin to the left for the gap */
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+    border-bottom: 2px solid #00796B;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+}
+
+.minimalist-list .list-group-item {
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.minimalist-list .list-group-item:last-child {
+    border-bottom: none;
+}
+
+.minimalist-list .item-title {
+    font-weight: 500;
+    color: #00796B;
+}
+
+.btn-order {
+    background-color: #00796B;
+    color: #fff;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+}
+
+.btn-order:hover {
+    background-color: #005c52;
+}
+
+.scrollable-section {
+    max-height: calc(100vh - 200px); /* Adjust based on your layout */
+    overflow-y: auto;
+}
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Responsive design */
+@media (max-width: 767px) {
+    #sidebar {
+        width: 60px;
+        padding: 20px 0;
+    }
+
+    #sidebar .nav-link {
+        font-size: 0;
+        padding: 10px 15px;
+    }
+
+    #sidebar .nav-link i {
+        font-size: 18px;
+        margin: 0;
+    }
+
+    #sidebar .nav-link:hover {
+        font-size: 18px;
+    }
+
+    .main-content {
+        margin-left: 60px;
+    }
+}
+.product-card {
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.order-summary {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 120px; /* Add margin to avoid overlap with navbar */
+    margin-top: 20px; /* Add margin to avoid overlap with navbar */
+}
+
+.summary-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.order-total {
+    margin-top: 20px;
+}
+
+.order-total p {
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-order {
+    background-color: #00796B;
+    color: #fff;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.btn-order:hover {
+    background-color: #005c52;
+}
+
+.quantity-input-group {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-input-group .btn {
+    flex: 1;
+}
+
+.quantity-input-group .form-control {
+    flex: 2;
+    text-align: center;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-detail {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.order-detail:last-child {
+    margin-right: 0;
+}
+
+.item-title {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.order-detail span + span {
+    margin-left: 5px;
+}
+
+@media (max-width: 767px) {
+    .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .order-detail {
+        justify-content: flex-start;
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+
+    .order-detail:last-child {
+        margin-bottom: 0;
+    }
+
+    .order-detail span + span {
+        margin-left: 5px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    #sidebar {
+        width: 200px;
+    }
+
+    .main-content {
+        margin-left: 200px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    #sidebar {
+        width: 220px;
+    }
+
+    .main-content {
+        margin-left: 220px;
+    }
+}
+
+@media (min-width: 1200px) {
+    #sidebar {
+        width: 250px;
+    }
+
+    .main-content {
+        margin-left: 250px;
+    }
+}
+
+/* General styles */
+body, html {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(120deg, #f3da89, #f7b5a3);
+    color: #333;
+    min-height: 100%;
+}
+.order-item {
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr) minmax(200px, 2fr) minmax(100px, 1fr) minmax(200px, 3fr) minmax(100px, 1fr) minmax(100px, 1fr);
+    grid-gap: 20px;
+    align-items: start;
+}
+
+.order-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Ensure all sections are aligned properly */
+.order-id,
+.product,
+.quantity,
+.customizations,
+.status,
+.total-price {
+    min-width: 100px; /* Adjust as necessary */
+}
+
+.product {
+    flex: 1;
+    min-width: 200px; /* Increase min-width for product field */
+}
+
+.customizations {
+    flex: 1;
+}
+
+.customizations span {
+    display: block;
+}
+
+.nav-tabs .nav-item {
+    flex: 1;
+    text-align: center;
+}
+
+.nav-tabs .nav-link {
+    width: 100%;
+    padding: 15px 0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: background-color 0.3s ease, border-bottom-color 0.3s ease;
+    cursor: pointer;
+}
+
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link:focus {
+    background-color: #aad4fe;
+    border-bottom-color: #007bff;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #ffffff;
+    border-bottom-color: #007bff;
+    color: #007bff;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+.form-group input {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.card-header-tabs {
+    border-bottom: 2px solid #007bff;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-bottom: none;
+    background-color: #fff;
+}
+
+.btn-primary {
+    background-color: #00796B;
+    border: none;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #005c52;
+}
+
+.minimalist-list .list-group-item {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* Adjust grid columns for better layout */
+    gap: 10px; /* Add gap between columns */
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e9ecef; /* Border bottom for distinction */
+    background-color: #ffffff;
+    border-radius: 5px; /* Rounded corners */
+    margin-bottom: 10px; /* Margin bottom for spacing */
+}
+
+.product-card img {
+    width: 100%;
+    height: 300px; /* Set a larger fixed height for the images */
+    object-fit: cover; /* Ensures the image covers the entire area without distortion */
+}
+
+.fixed-size-card {
+    height: 450px; /* Adjust the height as needed */
+}
+
+.fixed-size-image {
+    width: 100%;
+    height: 250px; /* Adjust this height as needed */
+    object-fit: cover;
+}
+
+.booking-summary-table {
+    background-color: #f8f9fa;  /* Light grey background */
+}
+.booking-summary-table th, .booking-summary-table td {
+    background-color: #ffffff;  /* White background for cells */
+}
+
+.nav-link {
+    color: #000;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link.active {
+    background-color: #007bff; /* or any other color that fits your design */
+    color: #fff;
+    border-radius: 5px;
+}
+
+.sidebar-icon {
+    margin-right: 10px;
+}
+
+.air-datepicker {
+    font-size: 1.8rem; /* Increase the font size of the datepicker */
+}
+.air-datepicker-cell.booked-date::after {
+    content: 'X';
+    color: red;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+    font-weight: bold;
+    opacity: 0.7;
+}
+.air-datepicker-cell.unavailable-date {
+    background-color: #f8d7da;
+}
+.air-datepicker-cell.blocked-date::after {
+    content: 'X';
+    color: red;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+    font-weight: bold;
+    opacity: 0.7;
+}
+
+.order-detail {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.item-title {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.list-group-item > div {
+    flex: 1;
+    min-width: 100px; /* Adjust this value as needed */
+}
+
+/* FullCalendar custom styles */
+.fc .fc-col-header-cell-cushion {
+    background-color: #f0f0f0; /* Header background color */
+}
+
+.fc .fc-daygrid-day {
+    background-color: #ffffff; /* Day cell background color */
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+    background-color: #e6f7ff; /* Highlight today's date */
+}
+
+.fc-event.booked-date::after {
+    content: 'X';
+    color: red;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+    font-weight: bold;
+    opacity: 0.7;
+}
+.fc-event.booked-date {
+    background-color: #ff4d4d !important;
+    border-color: #ff4d4d !important;
+    color: white !important; /* Ensures the text is readable */
+}
+.fc-event.unavailable-date {
+    background-color: #f8d7da !important;
+}
+.fc-event.blocked-date::after {
+    content: 'X';
+    color: red;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+    font-weight: bold;
+    opacity: 0.7;
+}
+
+
+.fc-daygrid-day.fc-day-today {
+    background-color: #cfe3ff !important;
+}
+
+.fc-daygrid-day.fc-day-past {
+    background-color: #f7f7f7 !important;
+}
+
+.fc-daygrid-day.fc-day-future {
+    background-color: #fff !important;
+}
+
+.beds-left-event .beds-left-text {
+    color: rgb(0, 0, 0); /* Adjust the color as needed */
+    font-weight: bold; /* Adjust the font weight as needed */
+}
+
+.blocked-event {
+    background-color: rgba(255, 0, 0, 0.8) !important;
+    color: white !important;
+    font-weight: bold !important;
+}
+
+.booked-event {
+    background-color: rgba(0, 255, 0, 0.8) !important;
+    color: black !important;
+    font-weight: bold !important;
+}
+
+.event-text {
+    color: black !important;
+    font-weight: bold !important;
+}
+
+.beds-left-event {
+    background-color: rgba(255, 165, 0, 0.8) !important;
+    color: black !important;
+    font-weight: bold !important;
+}
+
+/* Ensure cards have a consistent size */
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-title {
+    font-size: 1.25rem; /* Adjust font size if needed */
+    margin-bottom: 10px; /* Adjust margin if needed */
+}
+
+.card-text {
+    flex-grow: 1;
+}
+
+.fixed-size-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.fixed-size-image {
+    width: 100%;
+    height: 200px; /* Adjust height as needed */
+    object-fit: cover;
+}
+
+@media (max-width: 767px) {
+    .fixed-size-image {
+        height: 150px;
+    }
+}
+
+.container-fluid {
+    flex: 1;
+}
+
+.product-card img, .accommodation-card img {
+    width: 100%;
+    height: 200px; /* Adjust the height as needed */
+    object-fit: cover; /* Ensure the image covers the entire area without distortion */
+}
+
+/* Additional consistency for the product cards */
+.product-card, .accommodation-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.product-card:hover, .accommodation-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card .card-body, .accommodation-card .card-body {
+    flex-grow: 1;
+}
+
+.product-card .card-text, .accommodation-card .card-text {
+    margin-top: auto;
+}
+
+
+.nav-link {
+    color: #000;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link.active {
+    background-color: #007bff; /* or any other color that fits your design */
+    color: #fff;
+    border-radius: 5px;
+}
+
+.sidebar-icon {
+    margin-right: 10px;
+}

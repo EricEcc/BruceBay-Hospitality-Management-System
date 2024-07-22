@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Bruce Bay Beans and Bunks - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('user.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user.order' %}active{% endif %}" href="{{ url_for('user.order') }}">
+                            <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                            <span>Menu</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('accommodation.booking') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user.merchandise_order') }}">
+                            <img src="{{ url_for('static', filename='images/icons/merchandise-icon.png') }}" alt="Merchandise Icon" class="sidebar-icon">
+                            <span>Merchandise</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Inbox</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user.profile' %}active{% endif %}" href="{{ url_for('user.profile') }}">
+                            <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user.manage_orders_bookings' %}active{% endif %}" href="{{ url_for('user.manage_orders_bookings') }}">
+                            <img src="{{ url_for('static', filename='images/icons/bookings-icon.png') }}" alt="Manage Orders and Bookings Icon" class="sidebar-icon">
+                            <span>Manage Orders & Bookings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'user.news' %}active{% endif %}" href="{{ url_for('user.news') }}">
+                            <img src="{{ url_for('static', filename='images/icons/announcement-icon.png') }}" alt="Announcement Icon" class="sidebar-icon">
+                            <span>News</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Welcome, {{ user[2] }} {{ user[3] }}</h1>
+            </div>
+
+            <!-- Food Orders Section -->
+            <div id="food-orders-section" class="mb-5">
+                <h2 class="section-title">Your Orders</h2>
+                <ul class="list-group minimalist-list">
+                    {% for order in orders %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Order ID:</span>
+                            <span>{{ order[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Product:</span>
+                            <span>{{ order[3] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Quantity:</span>
+                            <span>{{ order[4] }}</span>
+                        </div>
+                        <div class="order-detail customizations">
+                            <span class="item-title" style="font-weight: bold;">Customizations:</span>
+                            {% if order[5] %}
+                            <span>{{ order[5] }}</span>
+                            {% else %}
+                            <span>None</span>
+                            {% endif %}
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Status:</span>
+                            <span>{{ order[2] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Total Price:</span>
+                            <span>${{ order[1] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Estimated Time Left:</span>
+                            <span id="timer-{{ order[0] }}" data-time="{{ order[6] }}" data-estimated-time="{{ order[7] }}">
+                                {% if order[2] == 'pending' %}
+                                    Awaiting Confirmation
+                                {% else %}
+                                    <!-- Timer logic for other statuses -->
+                                {% endif %}
+                            </span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('user.order') }}" class="btn btn-order">Place a New Order</a>
+                </div>
+            </div>
+
+            <!-- Accommodation Section -->
+            <div id="accommodation-section" class="mb-5">
+                <h2 class="section-title">Your Accommodation Bookings</h2>
+                <ul class="list-group minimalist-list">
+                    {% for booking in bookings %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Booking ID:</span>
+                            <span>{{ booking[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Check-in Date:</span>
+                            <span>{{ booking[1] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Check-out Date:</span>
+                            <span>{{ booking[2] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Status:</span>
+                            <span>{{ booking[3] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Room Type:</span>
+                            <span>{{ booking[5] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Booking Reference:</span>
+                            <span>{{ booking[4] }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('accommodation.booking') }}" class="btn btn-order">Book a New Stay</a>
+                </div>
+            </div>
+
+            <!-- Merchandise Orders Section -->
+            <div id="merchandise-section" class="mb-5">
+                <h2 class="section-title">Your Merchandise Orders</h2>
+                <ul class="list-group minimalist-list">
+                    {% for order in merchandise_orders %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Order ID:</span>
+                            <span>{{ order[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Product:</span>
+                            <span>{{ order[3] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Quantity:</span>
+                            <span>{{ order[4] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Status:</span>
+                            <span>{{ order[2] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Total Price:</span>
+                            <span>${{ order[1] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Order Date:</span>
+                            <span>{{ order[5] }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('user.merchandise_order') }}" class="btn btn-order">Place a New Merchandise Order</a>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('[id^="timer-"]').forEach(timer => {
+            if (timer.textContent.trim() !== "Awaiting Confirmation") {
+                const orderDate = new Date(timer.getAttribute('data-time'));
+                const estimatedTime = parseInt(timer.getAttribute('data-estimated-time')) * 60 * 1000; // Convert minutes to milliseconds
+                const countdownEnd = new Date(orderDate.getTime() + estimatedTime);
+
+                function updateTimer() {
+                    const now = new Date();
+                    const timeLeft = countdownEnd - now;
+
+                    if (timeLeft > 0) {
+                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                        timer.textContent = `${minutes}m ${seconds}s`;
+                    } else {
+                        timer.textContent = "0m 0s";
+                    }
+                }
+
+                setInterval(updateTimer, 1000);
+                updateTimer();
+            }
+        });
+    });
+</script>
+{% endblock %}

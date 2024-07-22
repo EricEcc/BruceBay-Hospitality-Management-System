@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Payment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-5">Payment Information</h1>
+    <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('user.process_payment') }}">
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" class="form-control" id="cardNumber" name="cardNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="nameOnCard">Name on Card</label>
+                    <input type="text" class="form-control" id="nameOnCard" name="nameOnCard" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="text" class="form-control" id="expiryDate" name="expiryDate" placeholder="MM/YY" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="cvv">CVV</label>
+                        <input type="text" class="form-control" id="cvv" name="cvv" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Pay Now</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

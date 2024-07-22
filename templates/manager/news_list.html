@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Manager - News{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('manager.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.user_management' %}active{% endif %}" href="{{ url_for('manager.user_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/user-management-icon.png') }}" alt="User Management Icon" class="sidebar-icon">
+                            <span>User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.promotions_management' %}active{% endif %}" href="{{ url_for('manager.promotions_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotions Icon" class="sidebar-icon">
+                            <span>Promotions Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.inventory_management' %}active{% endif %}" href="{{ url_for('manager.inventory_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.accommodation_management' %}active{% endif %}" href="{{ url_for('manager.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.reporting_analytics' %}active{% endif %}" href="{{ url_for('manager.reporting_analytics') }}">
+                            <img src="{{ url_for('static', filename='images/icons/reporting-icon.png') }}" alt="Reporting Icon" class="sidebar-icon">
+                            <span>Reporting & Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.list_news' %}active{% endif %}" href="{{ url_for('manager.list_news') }}">
+                            <img src="{{ url_for('static', filename='images/icons/news-icon.png') }}" alt="News Icon" class="sidebar-icon">
+                            <span>News & Announcements</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.messages' %}active{% endif %}" href="{{ url_for('manager.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Inbox</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        color: #000;
+        text-decoration: none;
+    }
+    .nav-link.active {
+        background-color: #f8f9fa;
+        color: #007bff;
+        font-weight: bold;
+    }
+    .nav-link.active .sidebar-icon {
+        filter: none; /* Remove any filter if applied */
+    }
+    .sidebar-icon {
+        margin-right: 10px;
+    }
+</style>
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="mb-0">News Management</h1>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('manager.add_news') }}" class="btn btn-primary mb-3">Add News</a>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Content</th>
+                                    <th>Published At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="newsTable">
+                                {% for news in news_items %}
+                                <tr>
+                                    <td>{{ news[1] }}</td> <!-- Assuming title is the second column -->
+                                    <td>{{ news[2] }}</td> <!-- Assuming content is the third column -->
+                                    <td>{{ news[3].strftime('%Y-%m-%d %H:%M') }}</td> <!-- Assuming publishedat is the fourth column -->
+                                    <td>
+                                        <a href="{{ url_for('manager.edit_news', news_id=news[0]) }}" class="btn btn-sm btn-info">Edit</a>
+                                        <form action="{{ url_for('manager.delete_news', news_id=news[0]) }}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4">No news items found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchNews();
+
+        function fetchNews() {
+            fetch('{{ url_for("manager.list_news", _external=true) }}')
+                .then(response => response.json())
+                .then(data => {
+                    updateNewsTable(data.news);
+                })
+                .catch(error => console.error('Error loading news:', error));
+        }
+
+        function updateNewsTable(newsItems) {
+            const tableBody = document.getElementById('newsTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear existing entries
+
+            newsItems.forEach(news => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <tr>
+                        <td>${news.title}</td>
+                        <td>${news.content}</td>
+                        <td>${new Date(news.publishedAt).toLocaleString()}</td>
+                        <td>
+                            <a href="#" class="btn btn-info btn-sm" onclick="editNews(${news.id})">Edit</a>
+                            <button class="btn btn-danger btn-sm" onclick="deleteNews(${news.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.editNews = function(newsId) {
+            window.location.href = '/manager/news/edit/' + newsId; // Redirect to edit page
+        };
+
+        window.deleteNews = function(newsId) {
+            if (confirm('Are you sure you want to delete this news item?')) {
+                fetch('/manager/news/delete/' + newsId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        fetchNews(); // Reload news
+                        alert('News deleted successfully.');
+                    } else {
+                        alert('Failed to delete news.');
+                    }
+                })
+                .catch(error => alert('Error deleting news: ' + error.message));
+            }
+        };
+    });
+</script>
+{% endblock %}

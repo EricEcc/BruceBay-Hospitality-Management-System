@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Bruce Bay Beans and Bunks{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Ubuntu&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/air-datepicker/air-datepicker.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-order {
+            background-color: #00796B;
+            color: white;
+        }
+        .navbar-nav .nav-link {
+            font-family: 'Montserrat', sans-serif;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header class="py-5 fixed-top">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <a href="/" class="logo-link">
+                        <img src="{{ url_for('static', filename='images/Bruce_bay_logo.png') }}" alt="Bruce Bay Beans and Bunks Logo" class="logo" height="50">
+                    </a>
+                    <a href="/" class="title-link">
+                        <h1 class="mb-3 bebas-neue-regular" style="color: #00796B; font-size: 32px; font-weight: bold; margin-left: 10px;">Bruce Bay Beans and Bunks</h1>
+                    </a>
+                </div>
+                <div class="d-flex align-items-center">
+                    <nav>
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('user.order') }}">MENU</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('accommodation.booking') }}">ACCOMMODATION</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('user.merchandise_order') }}">MERCHANDISE</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('home.about') }}">ABOUT US</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('home.contact') }}">CONTACT</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="d-flex align-items-center">
+                        {% if 'username' in session %}
+                            <a href="{{ url_for('user.logout') }}" class="btn btn-stunning btn-signup">
+                                <i class="fas fa-user-plus"></i> Log Out
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('user.login') }}" class="btn btn-stunning btn-signup">
+                                <i class="fas fa-user-plus"></i> Log In
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container mt-5 pt-5">
+        <!-- Alert section removed -->
+    </div>
+    <div class="container-fluid flex-grow-1">
+        <div class="row">
+            {% if session.get('usertype') == 'customer' %}
+            <!-- Customer Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('user.dashboard') }}">
+                                <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'user.order' %}active{% endif %}" href="{{ url_for('user.order') }}">
+                                <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                                <span>Menu</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'accommodation.booking' %}active{% endif %}" href="{{ url_for('accommodation.booking') }}">
+                                <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                                <span>Accommodation</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'user.merchandise_order' %}active{% endif %}" href="{{ url_for('user.merchandise_order') }}">
+                                <img src="{{ url_for('static', filename='images/icons/merchandise-icon.png') }}" alt="Merchandise Icon" class="sidebar-icon">
+                                <span>Merchandise</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'user.messages' %}active{% endif %}" href="{{ url_for('user.messages') }}">
+                                <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                                <span>Inbox</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'user.profile' %}active{% endif %}" href="{{ url_for('user.profile') }}">
+                                <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'user.manage_orders_bookings' %}active{% endif %}" href="{{ url_for('user.manage_orders_bookings') }}">
+                                <img src="{{ url_for('static', filename='images/icons/bookings-icon.png') }}" alt="Manage Orders and Bookings Icon" class="sidebar-icon">
+                                <span>Manage Orders & Bookings</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'user.news' %}active{% endif %}" href="{{ url_for('user.news') }}">
+                                <img src="{{ url_for('static', filename='images/icons/announcement-icon.png') }}" alt="Announcement Icon" class="sidebar-icon">
+                                <span>News</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            {% elif session.get('usertype') == 'staff' %}
+            <!-- Staff Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'staff.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('staff.dashboard') }}">
+                                <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'staff.inventory' %}active{% endif %}" href="{{ url_for('staff.inventory') }}">
+                                <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                                <span>Inventory</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'staff.accommodation_management' %}active{% endif %}" href="{{ url_for('staff.accommodation_management') }}">
+                                <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                                <span>Accommodation Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'staff.get_menu' %}active{% endif %}" href="{{ url_for('staff.get_menu') }}">
+                                <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                                <span>Menu Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'staff.messages' %}active{% endif %}" href="{{ url_for('staff.messages') }}">
+                                <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                                <span>Messages</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'staff.profile' %}active{% endif %}" href="{{ url_for('staff.profile') }}">
+                                <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'staff.promotion' %}active{% endif %}" href="{{ url_for('staff.promotion') }}">
+                                <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotion Icon" class="sidebar-icon">
+                                <span>Promotion Code</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            {% elif session.get('usertype') == 'manager' %}
+            <!-- Manager Sidebar -->
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manager.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('manager.dashboard') }}">
+                                <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manager.user_management' %}active{% endif %}" href="{{ url_for('manager.user_management') }}">
+                                <img src="{{ url_for('static', filename='images/icons/user-management-icon.png') }}" alt="User Management Icon" class="sidebar-icon">
+                                <span>User Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manager.promotions_management' %}active{% endif %}" href="{{ url_for('manager.promotions_management') }}">
+                                <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotions Icon" class="sidebar-icon">
+                                <span>Promotions Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manager.inventory_management' %}active{% endif %}" href="{{ url_for('manager.inventory_management') }}">
+                                <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                                <span>Inventory Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manager.accommodation_management' %}active{% endif %}" href="{{ url_for('manager.accommodation_management') }}">
+                                <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                                <span>Accommodation Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manager.reporting_analytics' %}active{% endif %}" href="{{ url_for('manager.reporting_analytics') }}">
+                                <img src="{{ url_for('static', filename='images/icons/reporting-icon.png') }}" alt="Reporting Icon" class="sidebar-icon">
+                                <span>Reporting & Analytics</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manager.list_news' %}active{% endif %}" href="{{ url_for('manager.list_news') }}">
+                                <img src="{{ url_for('static', filename='images/icons/news-icon.png') }}" alt="News Icon" class="sidebar-icon">
+                                <span>News & Announcements</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'manager.messages' %}active{% endif %}" href="{{ url_for('manager.messages') }}">
+                                <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                                <span>Inbox</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            {% endif %}
+            <!-- Main content -->
+            <main class="{% if session.get('usertype') in ['customer', 'staff', 'manager'] %}col-md-9 ms-sm-auto col-lg-10{% else %}col-12{% endif %} px-md-4">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    <footer class="mt-auto">
+        <div class="container text-center">
+            <p>Contact us: info@brucebaybeansandbunks.com | Phone: 123-456-7890</p>
+        </div>
+    </footer>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/air-datepicker/air-datepicker.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var triggerTabList = [].slice.call(document.querySelectorAll('#profile-tabs a'));
+            triggerTabList.forEach(function (triggerEl) {
+                var tabTrigger = new bootstrap.Tab(triggerEl);
+
+                triggerEl.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    tabTrigger.show();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

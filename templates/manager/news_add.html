@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Add News{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Add News</h2>
+    <form method="POST" action="{{ url_for('manager.add_news') }}">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <textarea class="form-control" id="content" name="content" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add News</button>
+    </form>
+</div>
+
+<script>
+document.getElementById('addNewsForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const formData = {
+        title: document.getElementById('title').value,
+        content: document.getElementById('content').value
+    };
+
+    fetch("{{ url_for('manager.add_news') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // handle response
+        console.log(data);
+        if(data.success) {
+            // Redirect or update UI
+            window.location.href = "{{ url_for('manager.list_news') }}"; // example redirect after success
+        } else {
+            // Show error
+            alert('Failed to add news');
+        }
+    })
+    .catch(error => alert('Error: ' + error.message));
+});
+
+</script>
+{% endblock %}

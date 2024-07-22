@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid flex-grow-1">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('staff.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.inventory' %}active{% endif %}" href="{{ url_for('staff.inventory') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.accommodation_management' %}active{% endif %}" href="{{ url_for('staff.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.get_menu' %}active{% endif %}" href="{{ url_for('staff.get_menu') }}">
+                            <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                            <span>Menu Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.messages' %}active{% endif %}" href="{{ url_for('staff.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.profile' %}active{% endif %}" href="{{ url_for('staff.profile') }}">
+                            <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.promotion' %}active{% endif %}" href="{{ url_for('staff.promotion') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotion Icon" class="sidebar-icon">
+                            <span>Promotion Code</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <!-- Main content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="container mt-5 pt-5">
+                <div class="row justify-content-center align-items-center min-vh-100">
+                    <div class="col-lg-8 col-md-10">
+                        <div class="card shadow border-0">
+                            <div class="card-header bg-white">
+                                <ul class="nav nav-tabs card-header-tabs" id="profile-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if 'tab' not in request.args or request.args['tab'] == 'info' %}active{% endif %}" id="info-tab" data-bs-toggle="tab" href="#info" role="tab" aria-controls="info" aria-selected="true">User info</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {% if request.args['tab'] == 'password' %}active{% endif %}" id="password-tab" data-bs-toggle="tab" href="#password" role="tab" aria-controls="password" aria-selected="false">Change Password</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body p-5">
+                                <div class="tab-content" id="profile-tabs-content">
+                                    <!-- Update Info Tab -->
+                                    <div class="tab-pane fade {% if 'tab' not in request.args or request.args['tab'] == 'info' %}show active{% endif %}" id="info" role="tabpanel" aria-labelledby="info-tab">
+                                        <form id="updateInfoForm" action="{{ url_for('staff.update_info') }}" method="post">
+                                            <h3 class="mb-4 text-center">Update Information</h3>
+                                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                              {% if messages %}
+                                                <div class="alert alert-dismissible fade show" role="alert">
+                                                  {% for category, message in messages %}
+                                                    {% if category != 'password_error' and category != 'password_success' %}
+                                                      <div class="alert alert-{{ category }}">{{ message }}</div>
+                                                    {% endif %}
+                                                  {% endfor %}
+                                                </div>
+                                              {% endif %}
+                                            {% endwith %}
+                                            <div class="form-group mb-4">
+                                                <label for="email" class="form-label">Email address</label>
+                                                <input type="email" class="form-control border-0 border-bottom" id="email" name="email" value="{{ staff.email }}" required>
+                                                <div class="invalid-feedback">Please enter a valid email address (e.g., name@example.com).</div>
+                                            </div>
+                                            <div class="text-center">
+                                                <button type="submit" class="btn btn-primary btn-md btn-block" style="background-color: #00796B;">Update Information</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <!-- Update Password Tab -->
+                                    <div class="tab-pane fade {% if request.args['tab'] == 'password' %}show active{% endif %}" id="password" role="tabpanel" aria-labelledby="password-tab">
+                                        <form id="updatePasswordForm" action="{{ url_for('staff.update_password') }}" method="post">
+                                            <h3 class="mb-4 text-center">Change Password</h3>
+                                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                              {% if messages %}
+                                                <div class="alert alert-dismissible fade show" role="alert">
+                                                  {% for category, message in messages %}
+                                                    {% if category == 'password_error' or category == 'password_success' %}
+                                                      <div class="alert alert-{{ 'danger' if category == 'password_error' else 'success' }}">{{ message }}</div>
+                                                    {% endif %}
+                                                  {% endfor %}
+                                                </div>
+                                              {% endif %}
+                                            {% endwith %}
+                                            <div class="form-group mb-4">
+                                                <label for="current_password" class="form-label">Current Password</label>
+                                                <input type="password" class="form-control border-0 border-bottom" id="current_password" name="current_password" required>
+                                                <div class="invalid-feedback">Please enter your current password.</div>
+                                            </div>
+                                            <div class="form-group mb-4">
+                                                <label for="new_password" class="form-label">New Password</label>
+                                                <input type="password" class="form-control border-0 border-bottom" id="new_password" name="new_password" pattern="(?=.*[A-Za-z])(?=.*\d)(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" required>
+                                                <div class="invalid-feedback">Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character.</div>
+                                            </div>
+                                            <div class="form-group mb-4">
+                                                <label for="confirm_password" class="form-label">Confirm Password</label>
+                                                <input type="password" class="form-control border-0 border-bottom" id="confirm_password" name="confirm_password" required>
+                                                <div class="invalid-feedback">Passwords do not match.</div>
+                                                <div id="password-match-status"></div>
+                                            </div>
+                                            <div class="text-center">
+                                                <button type="submit" class="btn btn-primary btn-md btn-block" style="background-color: #00796B;">Change Password</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Form validation using JavaScript
+    const updateInfoForm = document.getElementById('updateInfoForm');
+    const updatePasswordForm = document.getElementById('updatePasswordForm');
+    let confirmPasswordTouched = false;
+
+    updateInfoForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (updateInfoForm.checkValidity()) {
+            // Submit form if valid
+            updateInfoForm.submit();
+        } else {
+            // Show validation feedback
+            const inputs = updateInfoForm.querySelectorAll('.form-control');
+            inputs.forEach(function(input) {
+                if (!input.checkValidity()) {
+                    const feedback = input.nextElementSibling;
+                    if (input.id === 'email') {
+                        feedback.textContent = 'Please enter a valid email address (e.g., name@example.com).';
+                    } else {
+                        feedback.textContent = input.validationMessage;
+                    }
+                    input.classList.add('is-invalid');
+                }
+            });
+        }
+    });
+
+    updatePasswordForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (updatePasswordForm.checkValidity() && validatePasswordMatch()) {
+            // Submit form if valid
+            updatePasswordForm.submit();
+        } else {
+            // Show validation feedback
+            const inputs = updatePasswordForm.querySelectorAll('.form-control');
+            inputs.forEach(function(input) {
+                if (!input.checkValidity()) {
+                    const feedback = input.nextElementSibling;
+                    if (input.id === 'current_password') {
+                        feedback.textContent = 'Please enter your current password.';
+                    } else if (input.id === 'new_password') {
+                        feedback.textContent = 'Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character.';
+                    } else if (input.id === 'confirm_password') {
+                        feedback.textContent = 'Passwords do not match.';
+                    } else {
+                        feedback.textContent = input.validationMessage;
+                    }
+                    input.classList.add('is-invalid');
+                }
+            });
+        }
+    });
+
+    // Reset validation feedback on input
+    function resetValidationFeedback(form) {
+        form.addEventListener('input', function(event) {
+            const input = event.target;
+            const feedback = input.nextElementSibling;
+            if (input.checkValidity()) {
+                feedback.textContent = '';
+                input.classList.remove('is-invalid');
+            } else {
+                if (input.id === 'email') {
+                    feedback.textContent = 'Please enter a valid email address (e.g., name@example.com).';
+                } else if (input.id === 'current_password') {
+                    feedback.textContent = 'Please enter your current password.';
+                } else if (input.id === 'new_password') {
+                    feedback.textContent = 'Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character.';
+                } else if (input.id === 'confirm_password') {
+                    feedback.textContent = 'Passwords do not match.';
+                } else {
+                    feedback.textContent = input.validationMessage;
+                }
+                input.classList.add('is-invalid');
+            }
+        });
+    }
+
+    resetValidationFeedback(updateInfoForm);
+    resetValidationFeedback(updatePasswordForm);
+
+    // Confirm password validation
+    const newPassword = document.getElementById('new_password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const passwordMatchStatus = document.getElementById('password-match-status');
+
+    confirmPassword.addEventListener('input', function() {
+        confirmPasswordTouched = true;
+        validatePasswordMatch();
+    });
+
+    newPassword.addEventListener('input', function() {
+        if (confirmPasswordTouched) {
+            validatePasswordMatch();
+        }
+    });
+
+    function validatePasswordMatch() {
+        if (confirmPassword.value === newPassword.value) {
+            passwordMatchStatus.textContent = '✔️ Passwords match';
+            passwordMatchStatus.style.color = 'green';
+            confirmPassword.classList.remove('is-invalid');
+            return true;
+        } else {
+            passwordMatchStatus.textContent = '❌ Passwords do not match';
+            passwordMatchStatus.style.color = 'red';
+            confirmPassword.classList.add('is-invalid');
+            return false;
+        }
+    }
+</script>
+{% endblock %}

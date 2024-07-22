@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Bruce Bay Beans and Bunks - Book Accommodation{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="section-title text-center mb-4">Book Your Stay</h2>
+
+            <!-- Accommodation Section -->
+            <section class="row justify-content-center mb-5">
+                <div class="col-md-10">
+                    <h2 class="text-center mb-4">Accommodation</h2>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card fixed-size-card">
+                                <img src="{{ url_for('static', filename='images/products/dorm_room1.png') }}" class="card-img-top fixed-size-image" alt="Dorm Room">
+                                <div class="card-body d-flex flex-column">
+                                    <h2 class="card-title">Dorm Room</h2>
+                                    <p class="card-text">Description: a shared room with 4 beds</p>
+                                    <p class="card-text mt-auto">Price: $25.00 per night</p>
+                                    <a href="{{ url_for('accommodation.availability_page', productid=4) }}" class="btn btn-info mt-2">Select</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card fixed-size-card">
+                                <img src="{{ url_for('static', filename='images/products/queen_room.jpg') }}" class="card-img-top fixed-size-image" alt="Queen Room">
+                                <div class="card-body d-flex flex-column">
+                                    <h2 class="card-title">Queen Room</h2>
+                                    <p class="card-text">Description: private room with a queen bed</p>
+                                    <p class="card-text mt-auto">Price: $50.00 per night</p>
+                                    <a href="{{ url_for('accommodation.availability_page', productid=5) }}" class="btn btn-info mt-2">Select</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

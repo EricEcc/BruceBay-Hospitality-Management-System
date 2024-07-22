@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-body p-5">
+                    <form id="registerForm" method="POST" action="/user/register">
+                        <h3 class="mb-4 text-center">SIGN UP</h3>
+                        <div class="form-group mb-4">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control border-0 border-bottom" id="username" name="username" pattern="^[A-Za-z]+$" required>
+                            <div class="invalid-feedback">Username should only contain letters.</div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="firstname" class="form-label">First Name</label>
+                            <input type="text" class="form-control border-0 border-bottom" id="firstname" name="firstname" pattern="^[A-Za-z]+$" required>
+                            <div class="invalid-feedback">First name should only contain letters.</div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="lastname" class="form-label">Last Name</label>
+                            <input type="text" class="form-control border-0 border-bottom" id="lastname" name="lastname" pattern="^[A-Za-z]+$" required>
+                            <div class="invalid-feedback">Last name should only contain letters.</div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control border-0 border-bottom" id="email" name="email" required>
+                            <div class="invalid-feedback">Please enter a valid email address (e.g., name@example.com).</div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control border-0 border-bottom" id="phone" name="phone" pattern="^(\+64|0064|0)[2-9]\d{7,9}$" required>
+                            <div class="invalid-feedback">Phone number should be a valid number (e.g., +64211234567, 0211234567).</div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control border-0 border-bottom" id="password" name="password" pattern="(?=.*[A-Za-z])(?=.*\d)(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" required>
+                            <div class="invalid-feedback">Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character.</div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control border-0 border-bottom" id="confirm_password" name="confirm_password" required>
+                            <div class="invalid-feedback">Passwords do not match.</div>
+                        </div>
+                    </form>
+                    <div class="d-flex justify-content-center mt-4">
+                        <button form="registerForm" type="submit" class="btn btn-primary" style="background-color: #00796B; width: 49%; margin-right: 2%;">Register</button>
+                        <form action="/user/login" method="get" class="flex-fill">
+                            <button type="submit" class="btn btn-primary" style="background-color: #00796B; width: 99%; color: white;">Sign In</button>
+                        </form>
+                    </div>
+                    
+                </div>                
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Form validation using JavaScript
+    const form = document.getElementById('registerForm');
+    let confirmPasswordTouched = false;
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (form.checkValidity()) {
+            // Submit form if valid
+            alert('Registration successful!');
+            form.submit(); // Uncomment this line to actually submit the form
+            form.reset(); // Clear form fields
+        } else {
+            // Show validation feedback
+            const inputs = form.querySelectorAll('.form-control');
+            inputs.forEach(function(input) {
+                if (!input.checkValidity()) {
+                    const feedback = input.nextElementSibling;
+                    if (input.id === 'username') {
+                        feedback.textContent = 'Username should only contain letters.';
+                    } else if (input.id === 'firstname') {
+                        feedback.textContent = 'First name should only contain letters.';
+                    } else if (input.id === 'lastname') {
+                        feedback.textContent = 'Last name should only contain letters.';
+                    } else if (input.id === 'email') {
+                        feedback.textContent = 'Please enter a valid email address (e.g., name@example.com).';
+                    } else if (input.id === 'phone') {
+                        feedback.textContent = 'Phone number should be a valid number (e.g., +64211234567, 0211234567).';
+                    } else if (input.id === 'password') {
+                        feedback.textContent = 'Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character.';
+                    } else if (input.id === 'confirm_password') {
+                        feedback.textContent = 'Passwords do not match.';
+                    } else {
+                        feedback.textContent = input.validationMessage;
+                    }
+                    input.classList.add('is-invalid');
+                }
+            });
+        }
+    });
+
+    // Reset validation feedback on input
+    form.addEventListener('input', function(event) {
+        const input = event.target;
+        const feedback = input.nextElementSibling;
+        if (input.checkValidity()) {
+            feedback.textContent = '';
+            input.classList.remove('is-invalid');
+        } else {
+            if (input.id === 'username') {
+                feedback.textContent = 'Username should only contain letters.';
+            } else if (input.id === 'firstname') {
+                feedback.textContent = 'First name should only contain letters.';
+            } else if (input.id === 'lastname') {
+                feedback.textContent = 'Last name should only contain letters.';
+            } else if (input.id === 'email') {
+                feedback.textContent = 'Please enter a valid email address (e.g., name@example.com).';
+            } else if (input.id === 'phone') {
+                feedback.textContent = 'Phone number should be a valid number (e.g., +64211234567, 0211234567).';
+            } else if (input.id === 'password') {
+                feedback.textContent = 'Password must be at least 8 characters long and contain at least one uppercase letter, one number, and one special character.';
+            } else if (input.id === 'confirm_password') {
+                feedback.textContent = 'Passwords do not match.';
+            } else {
+                feedback.textContent = input.validationMessage;
+            }
+            input.classList.add('is-invalid');
+        }
+    });
+
+    // Confirm password validation
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const passwordMatchStatus = document.getElementById('password-match-status');
+
+    confirmPassword.addEventListener('input', function() {
+        confirmPasswordTouched = true;
+        validatePasswordMatch();
+    });
+
+    password.addEventListener('input', function() {
+        if (confirmPasswordTouched) {
+            validatePasswordMatch();
+        }
+    });
+
+    function validatePasswordMatch() {
+        if (confirmPassword.value === password.value) {
+            passwordMatchStatus.textContent = '✔️ Passwords match';
+            passwordMatchStatus.style.color = 'green';
+            confirmPassword.classList.remove('is-invalid');
+        } else {
+            passwordMatchStatus.textContent = '❌ Passwords do not match';
+            passwordMatchStatus.style.color = 'red';
+            confirmPassword.classList.add('is-invalid');
+        }
+    }
+</script>
+{% endblock %}

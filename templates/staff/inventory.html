@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Bruce Bay Beans and Bunks - Inventory Management
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid flex-grow-1">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('staff.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.inventory' %}active{% endif %}" href="{{ url_for('staff.inventory') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.accommodation_management' %}active{% endif %}" href="{{ url_for('staff.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.get_menu' %}active{% endif %}" href="{{ url_for('staff.get_menu') }}">
+                            <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                            <span>Menu Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.messages' %}active{% endif %}" href="{{ url_for('staff.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.profile' %}active{% endif %}" href="{{ url_for('staff.profile') }}">
+                            <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.promotion' %}active{% endif %}" href="{{ url_for('staff.promotion') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotion Icon" class="sidebar-icon">
+                            <span>Promotion Code</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Inventory Management</h1>
+            </div>
+
+            <div id="inventory-section" class="mb-5">
+                <h2 class="section-title">Manage Inventory</h2>
+                <ul class="list-group minimalist-list">
+                    {% for product in products %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center" id="row-{{ product[0] }}">
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Product ID:</strong></span>
+                            <span>{{ product[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Name:</strong></span>
+                            <span>{{ product[1] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Current Stock:</strong></span>
+                            <span id="stock-{{ product[0] }}">{{ product[3] }}</span>
+                        </div>
+                        <div class="order-detail quantity-input-group">
+                            <button class="btn btn-success adjust-btn" onclick="adjustStock('{{ product[0] }}', true)">+</button>
+                           <input type="number" id="adjustment-{{ product[0] }}" value="0" class="form-control quantity-input">
+                            <button class="btn btn-danger adjust-btn" onclick="adjustStock('{{ product[0] }}', false)">-</button>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Low Stock Threshold:</strong></span>
+                            <span id="low-threshold-{{ product[0] }}">{{ product[4] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <button class="btn btn-primary" onclick="saveStock('{{ product[0] }}')">Save</button>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <form action="/staff/inventory/download_report" method="post" class="mt-4">
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <label for="start" class="col-form-label">Start Date:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="date" id="start" name="start_date" required class="form-control">
+                    </div>
+                    <div class="col-auto">
+                        <label for="end" class="col-form-label">End Date:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="date" id="end" name="end_date" required class="form-control">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Generate Report</button>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+</div>
+
+<script>
+function adjustStock(productId, isAdding) {
+    var adjustmentField = $('#adjustment-' + productId);
+    var adjustment = parseInt(adjustmentField.val());
+    if (isNaN(adjustment)) {
+        adjustment = 0;
+    }
+    adjustment = isAdding ? adjustment + 1 : adjustment - 1;
+    adjustmentField.val(adjustment);
+}
+
+function saveStock(productId) {
+    var adjustment = parseInt($('#adjustment-' + productId).val());
+    var currentStock = parseInt($('#stock-' + productId).text());
+    var newStock = currentStock + adjustment;
+    var lowThreshold = parseInt($('#low-threshold-' + productId).text());
+
+    $.ajax({
+        url: '/staff/update_inventory/' + productId,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ quantity: newStock }),
+        success: function(response) {
+            if (response.success) {
+                $('#stock-' + productId).text(newStock);
+                $('#adjustment-' + productId).val(0);
+                alert('Inventory updated successfully!');
+                if (newStock <= lowThreshold) {
+                    $('#row-' + productId).addClass('low-stock');
+                } else {
+                    $('#row-' + productId).removeClass('low-stock');
+                }
+            } else {
+                alert('Failed to update inventory');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);  // Debugging line
+            alert('Error updating inventory: ' + error);
+        }
+    });
+}
+</script>
+{% endblock %}

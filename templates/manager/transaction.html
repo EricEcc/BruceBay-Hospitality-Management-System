@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('manager.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.user_management' %}active{% endif %}" href="{{ url_for('manager.user_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/user-management-icon.png') }}" alt="User Management Icon" class="sidebar-icon">
+                            <span>User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.promotions_management' %}active{% endif %}" href="{{ url_for('manager.promotions_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotions Icon" class="sidebar-icon">
+                            <span>Promotions Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.inventory_management' %}active{% endif %}" href="{{ url_for('manager.inventory_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.accommodation_management' %}active{% endif %}" href="{{ url_for('manager.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.reporting_analytics' %}active{% endif %}" href="{{ url_for('manager.reporting_analytics') }}">
+                            <img src="{{ url_for('static', filename='images/icons/reporting-icon.png') }}" alt="Reporting Icon" class="sidebar-icon">
+                            <span>Reporting & Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.list_news' %}active{% endif %}" href="{{ url_for('manager.list_news') }}">
+                            <img src="{{ url_for('static', filename='images/icons/news-icon.png') }}" alt="News Icon" class="sidebar-icon">
+                            <span>News & Announcements</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.messages' %}active{% endif %}" href="{{ url_for('manager.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Inbox</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        color: #000;
+        text-decoration: none;
+    }
+    .nav-link.active {
+        background-color: #f8f9fa;
+        color: #007bff;
+        font-weight: bold;
+    }
+    .nav-link.active .sidebar-icon {
+        filter: none; /* Remove any filter if applied */
+    }
+    .sidebar-icon {
+        margin-right: 10px;
+    }
+</style>
+
+<div class="container">
+    <!-- Main content -->
+    <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Transaction</h1>
+        </div>
+
+        <!-- Filter form -->
+        <form method="get" action="{{ url_for('manager.transaction') }}">
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="month" class="form-label">Month</label>
+                    <select id="month" name="month" class="form-control">
+                        {% set month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %}
+                        {% for i in range(1, 13) %}
+                        <option value="{{ i }}" {% if i == month %}selected{% endif %}>{{ month_names[i-1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+                    <label for="year" class="form-label">Year</label>
+                    <input type="number" id="year" name="year" class="form-control" value="{{ year }}" min="2000" max="{{ now.year }}">
+                </div>
+                <div class="col">
+                    <label for="product_name" class="form-label">Product Name</label>
+                    <input type="text" id="product_name" name="product_name" class="form-control" value="{{ product_name }}">
+                </div>
+                <div class="col">
+                    <label for="category" class="form-label">Category</label>
+                    <select id="category" name="category" class="form-control">
+                        <option value="">All</option>
+                        <option value="food" {% if category == 'food' %}selected{% endif %}>Food</option>
+                        <option value="drink" {% if category == 'drink' %}selected{% endif %}>Drink</option>
+                        <option value="merchandise" {% if category == 'merchandise' %}selected{% endif %}>Merchandise</option>
+                        <option value="accommodation" {% if category == 'accommodation' %}selected{% endif %}>Accommodation</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label for="submit" class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary form-control">Filter</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Orders content -->
+        <div id="transaction-content" class="mb-5">
+            <h2 class="section-title"><strong>Transaction of Orders</strong></h2>
+            <p>Below is the list of all orders for {{ month }}/{{ year }}{% if product_name %}, filtered by product name "{{ product_name }}"{% endif %}{% if category %}, and category "{{ category }}"{% endif %}.</p>
+            {% if orders %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer ID</th>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Order Date</th>
+                        <th>Total Price</th>
+                        <th>Net Price</th>
+                        <th>GST</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order[0] }}</td>
+                        <td>{{ order[1] }}</td>
+                        <td>{{ order[4] }}</td>
+                        <td>{{ order[5] }}</td>
+                        <td>{{ order[2] }}</td>
+                        <td>{{ order[3] }}</td>
+                        <td>{{ order[6] }}</td>
+                        <td>{{ order[7] }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="5"><strong>Totals</strong></td>
+                        <td><strong>{{ total_totalprice }}</strong></td>
+                        <td><strong>{{ total_netprice }}</strong></td>
+                        <td><strong>{{ total_gst }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            {% else %}
+            <p>No orders found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Accommodation transactions content -->
+        <div id="accommodation-transaction-content" class="mb-5">
+            <h2 class="section-title"><strong>Transaction of Accommodation</strong></h2>
+            <p>Below is the list of all accommodation transactions for {{ month }}/{{ year }}{% if product_name %}, filtered by product name "{{ product_name }}"{% endif %}{% if category == 'accommodation' %}, and category "Accommodation"{% endif %}.</p>
+            {% if accommodation_orders %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Type Of Room</th>
+                        <th>Days</th>
+                        <th>Total Price</th>
+                        <th>Net Price</th>
+                        <th>GST</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in accommodation_orders %}
+                    <tr>
+                        <td>{{ booking[0] }}</td>
+                        <td>{{ booking[1] }}</td>
+                        <td>{{ booking[2] }}</td>
+                        <td>{{ booking[3] }}</td>
+                        <td>{{ booking[4] }}</td>
+                        <td>{{ booking[5] }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="3"><strong>Totals</strong></td>
+                        <td><strong>{{ total_accommodation_totalprice }}</strong></td>
+                        <td><strong>{{ total_accommodation_netprice }}</strong></td>
+                        <td><strong>{{ total_accommodation_gst }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            {% else %}
+            <p>No accommodation transactions found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Total revenue of the month -->
+        <div id="total-revenue-content" class="mb-5">
+            <h2 class="section-title"><strong>Total Revenue of the Month</strong></h2>
+            <p><strong>Total Revenue:</strong> {{ total_revenue }}</p>
+        </div>
+    </main>
+</div>
+{% endblock %}

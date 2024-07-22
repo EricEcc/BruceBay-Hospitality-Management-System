@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Bruce Bay Beans and Bunks - Book Accommodation{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="section-title text-center mb-4">Book Your Stay</h2>
+
+            <!-- Accommodation Section -->
+            <section class="row justify-content-center mb-5">
+                <div class="col-md-10">
+                    <h2 class="text-center mb-4">Accommodation</h2>
+                    <div class="row justify-content-center">
+                        <!-- Accommodation options -->
+                        {% for product in accommodation_products %}
+                        <div class="col-md-4 mb-4 d-flex align-items-stretch">
+                            <div class="card product-card">
+                                <img src="{{ url_for('static', filename='images/products/' ~ product[4]) }}" class="card-img-top" alt="{{ product[1] }}">
+                                <div class="card-body d-flex flex-column">
+                                    <h2 class="card-title">{{ product[1] }}</h2>
+                                    <p class="card-text"><strong>Description:</strong> {{ product[2] }}</p>
+                                    <p class="card-text mt-auto"><strong>Price:</strong> <span style="font-size: 1.2em;">${{ product[3] }}</span> per night</p>
+                                    <button class="btn btn-select mt-2" data-productid="{{ product[0] }}" onclick="selectRoomType(this)">Select</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<!-- Inject the user ID as a data attribute -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userIdElement = document.createElement('div');
+        userIdElement.id = 'userId';
+        userIdElement.dataset.userId = "{{ session.get('customer_id', '') }}";
+        document.body.appendChild(userIdElement);
+    });
+</script>
+
+<script>
+    function selectRoomType(button) {
+        const productid = button.getAttribute('data-productid');
+        window.location.href = '/accommodation/availability_page/' + productid;
+    }
+</script>
+{% endblock %}

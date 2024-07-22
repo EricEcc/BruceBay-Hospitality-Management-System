@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Place a Merchandise Order{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-5">Place a Merchandise Order</h1>
+    <form method="POST" id="orderForm">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    {% for product in products %}
+                    <div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
+                        <div class="card product-card h-100 shadow-sm">
+                            <img src="{{ url_for('static', filename='images/products/' ~ product[5]) }}" class="card-img-top" alt="{{ product[1] }}">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ product[1] }}</h5>
+                                <p class="card-text">{{ product[2] }}</p>
+                                <p class="card-text">Price: $<span class="product-price">{{ product[3] }}</span></p>
+                                <div class="form-group mt-auto">
+                                    <label for="quantity_{{ product[0] }}">Quantity:</label>
+                                    <input type="number" class="form-control quantity" name="items[{{ product[0] }}][quantity]" id="quantity_{{ product[0] }}" value="1" min="1">
+                                    <button type="button" class="btn btn-primary add-to-cart mt-2" data-product="{{ product[1] }}" data-product-id="{{ product[0] }}" data-price="{{ product[3] }}" data-quantity-input="#quantity_{{ product[0] }}">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="order-summary card shadow-sm" id="order-summary" style="display: none;">
+                    <div class="card-body">
+                        <h2 class="summary-title">My Orders</h2>
+                        <div id="order-items"></div>
+                        <div class="order-total">
+                            <p>Sub Total: <span id="sub-total">$0</span></p>
+                            <p>Total: <span id="total-price">$0</span></p>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="promo_code">Promotional Code:</label>
+                            <input type="text" class="form-control" id="promo_code" placeholder="Enter code">
+                            <button type="button" class="btn btn-secondary mt-2" id="apply_promo">Apply</button>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="button" id="checkoutButton" class="btn btn-primary btn-lg">Check out</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var orderSummary = document.getElementById('order-summary');
+    var orderItems = document.getElementById('order-items');
+    var subTotalElement = document.getElementById('sub-total');
+    var totalPriceElement = document.getElementById('total-price');
+    var checkoutButton = document.getElementById('checkoutButton');
+    var applyPromoButton = document.getElementById('apply_promo');
+    var subTotal = 0;
+    var promoCode = '';
+
+    document.querySelectorAll('.add-to-cart').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var product = button.getAttribute('data-product');
+            var product_id = button.getAttribute('data-product-id');
+            var price = parseFloat(button.getAttribute('data-price'));
+            var quantityInput = document.querySelector(button.getAttribute('data-quantity-input'));
+            var quantity = parseInt(quantityInput.value);
+
+            if (quantity > 0) {
+                if (orderSummary.style.display === 'none') {
+                    orderSummary.style.display = 'block';
+                }
+
+                var existingOrderItem = orderItems.querySelector(`.order-item[data-product-id='${product_id}']`);
+                if (existingOrderItem) {
+                    var existingQuantitySpan = existingOrderItem.querySelector('.item-quantity');
+                    var newQuantity = parseInt(existingQuantitySpan.textContent) + quantity;
+                    existingQuantitySpan.textContent = newQuantity;
+                    existingOrderItem.querySelector('.item-total').textContent = `$${(price * newQuantity).toFixed(2)}`;
+                } else {
+                    var orderItem = document.createElement('div');
+                    orderItem.classList.add('order-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                    orderItem.setAttribute('data-product-id', product_id);
+                    orderItem.innerHTML = `<p>${product} x <span class="item-quantity">${quantity}</span> - $<span class="item-total">${(price * quantity).toFixed(2)}</span></p>
+                                           <div class="quantity-adjust">
+                                               <button type="button" class="btn btn-sm btn-danger btn-minus">-</button>
+                                               <button type="button" class="btn btn-sm btn-success btn-plus">+</button>
+                                           </div>`;
+                    orderItems.appendChild(orderItem);
+
+                    orderItem.querySelector('.btn-minus').addEventListener('click', function () {
+                        adjustQuantity(orderItem, -1, price);
+                    });
+                    orderItem.querySelector('.btn-plus').addEventListener('click', function () {
+                        adjustQuantity(orderItem, 1, price);
+                    });
+                }
+
+                subTotal += price * quantity;
+                subTotalElement.textContent = `$${subTotal.toFixed(2)}`;
+                totalPriceElement.textContent = `$${subTotal.toFixed(2)}`;
+
+                quantityInput.value = 1;
+            } else {
+                alert('Please select a quantity greater than 0');
+            }
+        });
+    });
+
+    applyPromoButton.addEventListener('click', function() {
+        var code = document.getElementById('promo_code').value;
+
+        fetch('{{ url_for("user.apply_promo") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ code: code, sub_total: parseFloat(subTotalElement.textContent.substring(1)) }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                promoCode = code;
+                subTotal = data.new_sub_total;
+                subTotalElement.textContent = `$${subTotal.toFixed(2)}`;
+                totalPriceElement.textContent = `$${subTotal.toFixed(2)}`;
+                alert('Promotional code applied successfully!');
+            } else {
+                alert('Invalid promotional code');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while applying the promotional code. Please try again.');
+        });
+    });
+
+    checkoutButton.addEventListener('click', function() {
+        var orderDetails = [];
+
+        document.querySelectorAll('.order-item').forEach(function(item) {
+            var product_id = item.getAttribute('data-product-id');
+            var quantity = parseInt(item.querySelector('.item-quantity').textContent);
+
+            orderDetails.push({
+                product_id: product_id,
+                quantity: quantity
+            });
+        });
+
+        var orderData = {
+            orderDetails: orderDetails,
+            totalPrice: subTotal,
+            promoCode: promoCode
+        };
+
+        fetch('{{ url_for("user.merchandise_order") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(orderData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect_url;
+            } else {
+                alert('An error occurred while saving your order: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Please log in first to place an order.');
+        });
+    });
+
+    function adjustQuantity(orderItem, adjustment, price) {
+        var quantitySpan = orderItem.querySelector('.item-quantity');
+        var currentQuantity = parseInt(quantitySpan.textContent);
+        var newQuantity = currentQuantity + adjustment;
+
+        if (newQuantity <= 0) {
+            orderItem.remove();
+            if (orderItems.children.length === 0) {
+                orderSummary.style.display = 'none';
+            }
+        } else {
+            quantitySpan.textContent = newQuantity;
+            orderItem.querySelector('.item-total').textContent = `$${(price * newQuantity).toFixed(2)}`;
+        }
+
+        subTotal += price * adjustment;
+        subTotalElement.textContent = `$${subTotal.toFixed(2)}`;
+        totalPriceElement.textContent = `$${subTotal.toFixed(2)}`;
+    }
+});
+</script>
+
+{% endblock %}

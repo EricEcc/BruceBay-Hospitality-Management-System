@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Your Bookings</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Accommodation</th>
+                    <th>Check-in Date</th>
+                    <th>Check-out Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking['bookingid'] }}</td>
+                    <td>
+                        <form id="modifyForm-{{ booking['bookingid'] }}" action="{{ url_for('user.bookings') }}" method="post" class="form-inline">
+                            <input type="hidden" name="booking_id" value="{{ booking['bookingid'] }}">
+                            <input type="hidden" name="action" value="modify">
+                            <select class="form-control" name="new_accommodation_id" required>
+                                {% for accommodation in accommodations %}
+                                    <option value="{{ accommodation['accommodationid'] }}" {% if accommodation['accommodationid'] == booking['accommodationid'] %}selected{% endif %}>
+                                        {{ accommodation['name'] }} - {{ accommodation['description'] }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                    </td>
+                    <td>
+                            <input type="date" class="form-control" name="new_checkin" 
+                                   value="{{ booking['checkindate'].strftime('%Y-%m-%d') }}" required>
+                    </td>
+                    <td>
+                            <input type="date" class="form-control" name="new_checkout" 
+                                   value="{{ booking['checkoutdate'].strftime('%Y-%m-%d') }}" required>
+                    </td>
+                    <td>{{ booking['status'] }}</td>
+                    <td>
+                            <button type="button" class="btn btn-primary" onclick="confirmModification('modifyForm-{{ booking['bookingid'] }}')">Modify</button>
+                        </form>
+                        <form id="cancelForm-{{ booking['bookingid'] }}" action="{{ url_for('user.bookings') }}" method="post" class="form-inline mt-2">
+                            <input type="hidden" name="booking_id" value="{{ booking['bookingid'] }}">
+                            <input type="hidden" name="action" value="cancel">
+                            <input type="hidden" name="current_checkin" value="{{ booking['checkindate'].strftime('%Y-%m-%d') }}">
+                            <button type="button" class="btn btn-warning" onclick="confirmCancellation('cancelForm-{{ booking['bookingid'] }}')">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function confirmModification(formId) {
+        const form = document.getElementById(formId);
+        const checkin = new Date(form.new_checkin.value);
+        const checkout = new Date(form.new_checkout.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); 
+
+        if (checkin < today) {
+            alert("Check-in date must be today or later.");
+            return false;
+        }
+        if (checkout <= checkin) {
+            alert("Check-out date must be later than check-in date.");
+            return false;
+        }
+
+        let costInfo = "";
+        const modificationFee = 20; 
+        costInfo = `A modification fee of $${modificationFee} will be applied.`;
+        if (confirm(`Are you sure you want to modify this booking? ${costInfo}`)) {
+            form.submit();
+        }
+    }
+
+    function confirmCancellation(formId) {
+        const form = document.getElementById(formId);
+        const today = new Date();
+        const checkinDate = new Date(form.querySelector('[name="current_checkin"]').value);
+        let refundInfo = "";
+
+        const daysBeforeCheckin = (checkinDate - today) / (1000 * 60 * 60 * 24);
+        if (daysBeforeCheckin > 7) {
+            refundInfo = "You will receive a full refund.";
+        } else if (daysBeforeCheckin > 1) {
+            refundInfo = "You will receive a 50% refund.";
+        } else {
+            refundInfo = "No refund will be issued.";
+        }
+
+        if (confirm(`Are you sure you want to cancel this booking? ${refundInfo}`)) {
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}

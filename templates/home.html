@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="carousel-section" style="height: 550px;">
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item">
+                        <img src="static/images/banner.jpg" class="d-block w-100 carousel-image" alt="Image 1">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="static/images/coffee2.jpg" class="d-block w-100 carousel-image" alt="Image 2">
+                    </div>
+                    <div class="carousel-item active">
+                        <img src="static/images/coffee3.jpg" class="d-block w-100 carousel-image" alt="Image 3">
+                    </div>
+                    <!-- Add more carousel items as needed -->
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main class="container-fluid my-5">
+    <!-- Section for food and drinks -->
+    <section class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <h2 class="text-center mb-4">Menu</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <!-- Food and drink cards -->
+                {% for product in food_products %}
+                <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4 d-flex align-items-stretch">
+                    <div class="card fixed-size-card product-card">
+                        <img src="{{ url_for('static', filename='images/products/' ~ product[4]) }}" class="card-img-top fixed-size-image" alt="{{ product[1] }}">
+                        <div class="card-body">
+                            <h2 class="card-title">{{ product[1] }}</h2>
+                            <p class="card-text">Description: {{ product[2] }}</p>
+                            <p class="card-text mt-auto">Price: ${{ product[3] }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Section for accommodation -->
+    <section class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <h2 class="text-center mb-4">Accommodation</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="row justify-content-center">
+                        <!-- Accommodation cards -->
+                        {% for product in accommodation_products %}
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4 d-flex align-items-stretch">
+                            <div class="card fixed-size-card accommodation-card">
+                                <img src="{{ url_for('static', filename='images/products/' ~ product[4]) }}" class="card-img-top fixed-size-image" alt="{{ product[1] }}">
+                                <div class="card-body">
+                                    <h2 class="card-title">{{ product[1] }}</h2>
+                                    <p class="card-text">Description: {{ product[2] }}</p>
+                                    <p class="card-text mt-auto">Price: ${{ product[3] }} per night</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section for merchandise -->
+    <section class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <h2 class="text-center mb-4">Merchandise</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="row justify-content-center">
+                        <!-- Merchandise cards -->
+                        {% for product in merchandise_products %}
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4 d-flex align-items-stretch">
+                            <div class="card fixed-size-card merchandise-card">
+                                <img src="{{ url_for('static', filename='images/products/' ~ product[4]) }}" class="card-img-top fixed-size-image" alt="{{ product[1] }}">
+                                <div class="card-body">
+                                    <h2 class="card-title">{{ product[1] }}</h2>
+                                    <p class="card-text">Description: {{ product[2] }}</p>
+                                    <p class="card-text mt-auto">Price: ${{ product[3] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section for latest news -->
+    <section class="row justify-content-center mb-5">
+        <div class="col-md-10">
+            <h2 class="text-center mb-4">Latest News</h2>
+            <div class="row">
+                <!-- News items -->
+                {% for news_item in recent_news %}
+                <div class="col-md-12 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ news_item[1] }}</h3>
+                            <p class="card-text">{{ news_item[2] }}</p> <!-- Full content -->
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+
+{% endblock %}

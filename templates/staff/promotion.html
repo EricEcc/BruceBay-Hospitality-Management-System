@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}
+Bruce Bay Beans and Bunks - Promotion Management
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid flex-grow-1">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('staff.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.inventory' %}active{% endif %}" href="{{ url_for('staff.inventory') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.accommodation_management' %}active{% endif %}" href="{{ url_for('staff.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.get_menu' %}active{% endif %}" href="{{ url_for('staff.get_menu') }}">
+                            <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                            <span>Menu Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.messages' %}active{% endif %}" href="{{ url_for('staff.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.profile' %}active{% endif %}" href="{{ url_for('staff.profile') }}">
+                            <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.promotion' %}active{% endif %}" href="{{ url_for('staff.promotion') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotion Icon" class="sidebar-icon">
+                            <span>Promotion Code</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Promotion Code Management</h1>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div id="promotion-section" class="mb-5">
+                <h2 class="section-title">Create Promotion Code</h2>
+                <form method="POST" action="{{ url_for('staff.promotion') }}">
+                    <div class="mb-3">
+                        <label for="code" class="form-label">Promotion Code</label>
+                        <input type="text" class="form-control" id="code" name="code" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="discount_percent" class="form-label">Discount Percent</label>
+                        <input type="number" class="form-control" id="discount_percent" name="discount_percent" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valid_from" class="form-label">Valid From</label>
+                        <input type="date" class="form-control" id="valid_from" name="valid_from" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valid_to" class="form-label">Valid To</label>
+                        <input type="date" class="form-control" id="valid_to" name="valid_to" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="product_id" class="form-label">Applicable Product</label>
+                        <select class="form-control" id="product_id" name="product_id" required>
+                            {% for product in products %}
+                            <option value="{{ product.productid }}">{{ product.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Promotion Code</button>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}

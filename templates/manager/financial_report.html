@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Monthly Financial Report{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('manager.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.user_management' %}active{% endif %}" href="{{ url_for('manager.user_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/user-management-icon.png') }}" alt="User Management Icon" class="sidebar-icon">
+                            <span>User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.promotions_management' %}active{% endif %}" href="{{ url_for('manager.promotions_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotions Icon" class="sidebar-icon">
+                            <span>Promotions Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.inventory_management' %}active{% endif %}" href="{{ url_for('manager.inventory_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.accommodation_management' %}active{% endif %}" href="{{ url_for('manager.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.reporting_analytics' %}active{% endif %}" href="{{ url_for('manager.reporting_analytics') }}">
+                            <img src="{{ url_for('static', filename='images/icons/reporting-icon.png') }}" alt="Reporting Icon" class="sidebar-icon">
+                            <span>Reporting & Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.list_news' %}active{% endif %}" href="{{ url_for('manager.list_news') }}">
+                            <img src="{{ url_for('static', filename='images/icons/news-icon.png') }}" alt="News Icon" class="sidebar-icon">
+                            <span>News & Announcements</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.messages' %}active{% endif %}" href="{{ url_for('manager.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Inbox</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Monthly Financial Report</h1>
+            </div>
+
+            <!-- Financial Report Content -->
+            <div class="container mt-5">
+                <div class="report-container p-4" style="background-color: #f5f5f5; border-radius: 8px;">
+                    <h1 class="text-center mb-5">Monthly Financial Report</h1>
+
+                    <div class="report-section mb-4 pb-3 border-bottom">
+                        <h3><strong>This report provides an overview of the financial performance for the current month.</strong></h3>
+                        <h3><strong>Period Covered:</strong> From {{ start_date }} to {{ end_date }}.</h3>
+                    </div>
+
+                    <div class="report-section mb-4 pb-3 border-bottom">
+                        <h2>Food and Beverage Revenue Analysis</h2>
+                        <p>This section provides an analysis of the total F&B revenue generated within the specified period.</p>
+                        <p><strong>Total Revenue:</strong> ${{ total_revenue }}</p>
+                        <table class="table table-bordered mt-3">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for revenue in revenue_breakdown %}
+                                <tr>
+                                    <td>{{ revenue[1] }}</td>
+                                    <td>${{ revenue[0] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="report-section mb-4 pb-3 border-bottom">
+                        <h2>Accommodation Revenue Analysis</h2>
+                        <p>This section provides an analysis of the total accommodation revenue generated within the specified period.</p>
+                        <p><strong>Total Accommodation Revenue:</strong> ${{ total_accommodation_revenue }}</p>
+                        <table class="table table-bordered mt-3">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Room Type</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for revenue in accommodation_revenue_breakdown %}
+                                <tr>
+                                    <td>{{ revenue[1] }}</td>
+                                    <td>${{ revenue[0] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="report-section mb-4 pb-3 border-bottom">
+                        <h2>Order and Sales Analysis</h2>
+                        <p>This section highlights the total number of orders, the average order value, and the top-selling products.</p>
+                        <p><strong>Total Orders:</strong> {{ total_orders }}</p>
+                        <p><strong>Average Order Value:</strong> ${{ average_order_value }}</p>
+                        <h3>Top Selling Products</h3>
+                        <table class="table table-bordered mt-3">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity Sold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in top_selling_products %}
+                                <tr>
+                                    <td>{{ product[0] }}</td>
+                                    <td>{{ product[1] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="report-section mb-4 pb-3 border-bottom">
+                        <h2>Inventory Analysis</h2>
+                        <p>This section provides details on the current inventory levels and alerts for low stock items.</p>
+                        <h3>Current Inventory Levels</h3>
+                        <table class="table table-bordered mt-3">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Current Inventory</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for inventory in inventory_levels %}
+                                <tr>
+                                    <td>{{ inventory[0] }}</td>
+                                    <td>{{ inventory[1] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <h3>Low Stock Alerts</h3>
+                        <table class="table table-bordered mt-3">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Current Inventory</th>
+                                    <th>Low Stock Threshold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alert in low_stock_alerts %}
+                                <tr>
+                                    <td>{{ alert[0] }}</td>
+                                    <td>{{ alert[1] }}</td>
+                                    <td>{{ alert[2] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button class="btn btn-lg btn-primary" onclick="window.print()">Print Report</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+<style>
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        color: #000;
+        text-decoration: none;
+    }
+    .nav-link.active {
+        background-color: #f8f9fa;
+        color: #007bff;
+        font-weight: bold;
+    }
+    .nav-link.active .sidebar-icon {
+        filter: none; /* Remove any filter if applied */
+    }
+    .sidebar-icon {
+        margin-right: 10px;
+    }
+
+    .report-container {
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .report-section {
+        margin-bottom: 20px;
+    }
+
+    .report-section h2 {
+        font-size: 1.75rem;
+        margin-bottom: 15px;
+    }
+
+    .report-section p {
+        font-size: 1.15rem;
+        margin-bottom: 10px;
+    }
+
+    .table th, .table td {
+        font-size: 1.1rem;
+    }
+
+    .table thead th {
+        background-color: #e9ecef;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .btn {
+        font-size: 1.25rem;
+        padding: 10px 20px;
+    }
+
+    .border-bottom {
+        border-bottom: 2px solid #dee2e6 !important;
+    }
+</style>

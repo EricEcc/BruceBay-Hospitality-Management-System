@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-5">Order Confirmation</h1>
+    <div class="alert alert-success text-center" role="alert">
+        Payment successful! Your order ID is <span>{{ order_details[0][0] }}</span>.
+    </div>
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <h3>Order Details</h3>
+            <ul class="list-group minimalist-list">
+                {% for detail in order_details %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="order-detail">
+                        <span class="item-title" style="font-weight: bold;">Product:</span>
+                        <span>{{ detail[5] }}</span>
+                    </div>
+                    <div class="order-detail">
+                        <span class="item-title" style="font-weight: bold;">Quantity:</span>
+                        <span>{{ detail[6] }}</span>
+                    </div>
+                    <div class="order-detail">
+                        <span class="item-title" style="font-weight: bold;">Special Requests:</span>
+                        <span>{{ detail[7] }}</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="order-total mt-3">
+                <p>Total Cost: $<span>{{ order_details[0][1] }}</span></p>
+            </div>
+            <button type="button" class="btn btn-primary btn-block mt-4" onclick="goToDashboard()">Back to Dashboard</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function goToDashboard() {
+        window.location.href = "{{ url_for('user.dashboard') }}";
+    }
+</script>
+{% endblock %}

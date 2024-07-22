@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Latest News</h2>
+    <div class="row justify-content-center">
+        <!-- News items -->
+        {% for news_item in news %}
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">{{ news_item[1] }}</h3>
+                    <p class="card-text">{{ news_item[2] }}</p>
+                    <p class="card-text"><small class="text-muted">Published on {{ news_item[3].strftime('%Y-%m-%d %H:%M') }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

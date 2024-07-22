@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Reporting & Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('manager.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.user_management' %}active{% endif %}" href="{{ url_for('manager.user_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/user-management-icon.png') }}" alt="User Management Icon" class="sidebar-icon">
+                            <span>User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.promotions_management' %}active{% endif %}" href="{{ url_for('manager.promotions_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotions Icon" class="sidebar-icon">
+                            <span>Promotions Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.inventory_management' %}active{% endif %}" href="{{ url_for('manager.inventory_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.accommodation_management' %}active{% endif %}" href="{{ url_for('manager.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.reporting_analytics' %}active{% endif %}" href="{{ url_for('manager.reporting_analytics') }}">
+                            <img src="{{ url_for('static', filename='images/icons/reporting-icon.png') }}" alt="Reporting Icon" class="sidebar-icon">
+                            <span>Reporting & Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.list_news' %}active{% endif %}" href="{{ url_for('manager.list_news') }}">
+                            <img src="{{ url_for('static', filename='images/icons/news-icon.png') }}" alt="News Icon" class="sidebar-icon">
+                            <span>News & Announcements</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.messages' %}active{% endif %}" href="{{ url_for('manager.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Inbox</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        color: #000;
+        text-decoration: none;
+    }
+    .nav-link.active {
+        background-color: #f8f9fa;
+        color: #007bff;
+        font-weight: bold;
+    }
+    .nav-link.active .sidebar-icon {
+        filter: none; /* Remove any filter if applied */
+    }
+    .sidebar-icon {
+        margin-right: 10px;
+    }
+</style>
+
+<div class="container">
+    <!-- Main content -->
+    <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">Reporting & Analytics</h1>
+        </div>
+
+        <!-- Placeholder for main content -->
+        <div id="main-content" class="mb-5">
+            <h2 class="section-title">Welcome to the Reporting & Analytics Dashboard</h2>
+
+            <!-- Buttons -->
+            <div class="text-center mt-4">
+                <a href="{{ url_for('manager.transaction') }}" class="btn btn-order btn-lg mx-2">Transaction</a>
+                <a href="{{ url_for('manager.financial_report') }}" class="btn btn-order btn-lg mx-2">Financial Report</a>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+<style>
+    .btn-order {
+        background-color: #00796B;
+        color: #fff;
+        font-size: 1.25rem;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-order:hover {
+        background-color: #00594d;
+        color: #fff;
+    }
+</style>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Summary{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-5">Booking Summary</h1>
+    <div class="alert alert-success text-center" role="alert">
+        Payment successful! Your booking reference is <span id="booking-reference"></span>.
+    </div>
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <div id="booking-summary">
+                <h3>Booking Details</h3>
+                <ul class="list-group minimalist-list">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Check-in:</span>
+                            <span id="check-in"></span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Check-out:</span>
+                            <span id="check-out"></span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Total Cost:</span>
+                            <span id="total-cost"></span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Booking Reference:</span>
+                            <span id="booking-reference-detail"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <button type="button" class="btn btn-primary btn-block mt-4" onclick="goToDashboard()">Back to Dashboard</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails'));
+        if (bookingDetails) {
+            document.getElementById('check-in').innerText = bookingDetails.check_in;
+            document.getElementById('check-out').innerText = bookingDetails.check_out;
+            document.getElementById('total-cost').innerText = `$${bookingDetails.total_cost}`;
+            document.getElementById('booking-reference').innerText = bookingDetails.booking_reference;
+            document.getElementById('booking-reference-detail').innerText = bookingDetails.booking_reference;
+        }
+    });
+
+    function goToDashboard() {
+        window.location.href = "{{ url_for('user.dashboard') }}";
+    }
+</script>
+
+
+
+{% endblock %}

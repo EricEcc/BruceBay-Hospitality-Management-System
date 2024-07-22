@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block title %}Bruce Bay Beans and Bunks - Booking Availability{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="section-title text-center mb-4">Check Availability</h2>
+            
+            <!-- Accommodation Photo Carousel -->
+            <div id="accommodation-carousel" class="carousel slide mb-4" data-bs-ride="carousel" style="max-width: 850px; height: 450px; margin: 0 auto;">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="{{ url_for('static', filename='images/products/' ~ product[3]) }}" class="d-block w-100 img-fluid" alt="{{ product[1] }}">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{{ url_for('static', filename='images/Kitchen.jpg') }}" class="d-block w-100 img-fluid" alt="Kitchen">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{{ url_for('static', filename='images/Bathroom.jpg') }}" class="d-block w-100 img-fluid" alt="Bathroom">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#accommodation-carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#accommodation-carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+            <!-- Availability Form -->
+            <div id="availability-form" class="mb-4">
+                <h3 class="mb-3 text-center">Book your stay</h3>
+                <div class="card p-4 shadow">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="date-range" class="form-label">Select Dates</label>
+                            <input type="text" class="form-control" id="date-range" placeholder="Check-in - Check-out" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="num-guests" class="form-label">Guests</label>
+                            <select class="form-control" id="num-guests" name="num-guests">
+                                <option value="1">1 Guest</option>
+                                <option value="2">2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-block" onclick="checkAvailability()">Check availability</button>
+                </div>
+            </div>
+
+            <!-- Booking Confirmation Message -->
+            <div id="booking-confirmation" class="alert alert-success text-center" role="alert" style="display: none;">
+                Booking successful! Your booking reference is <span id="booking-reference"></span>.
+            </div>
+
+            <!-- Booking Summary -->
+            <div id="booking-summary" class="mb-4" style="display: none;">
+                <h3 class="mb-3 text-center">Booking Summary</h3>
+                <div class="card p-4 shadow">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Total Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summary-details">
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-success btn-block" onclick="confirmBooking()">Confirm Booking</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inject the user ID as a data attribute -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userIdElement = document.createElement('div');
+        userIdElement.id = 'userId';
+        userIdElement.dataset.userId = "{{ session.get('customer_id', '') }}";
+        document.body.appendChild(userIdElement);
+    });
+
+    let selectedProductid = "{{ product[0] }}";
+
+    function getUserId() {
+        const userIdElement = document.getElementById('userId');
+        return userIdElement ? userIdElement.dataset.userId : null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateRangeInput = document.getElementById('date-range');
+
+        const today = new Date().toISOString().split('T')[0];
+
+        const datepicker = new AirDatepicker(dateRangeInput, {
+            range: true,
+            dateFormat: 'yyyy-MM-dd',
+            minDate: today,
+            locale: {
+                days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                today: 'Today',
+                clear: 'Clear',
+                dateFormat: 'dd/MM/yyyy',
+                timeFormat: 'hh:ii aa',
+                firstDay: 0
+            },
+            multipleDatesSeparator: ' - ',
+            onSelect({ date, formattedDate, datepicker }) {
+                if (formattedDate.length === 2) {
+                    const [checkIn, checkOut] = formattedDate;
+                    dateRangeInput.value = `${checkIn} - ${checkOut}`;
+                    fetchAvailability(checkIn, checkOut);
+                }
+            }
+        });
+
+        fetch('/accommodation/availability/' + selectedProductid)
+            .then(response => response.json())
+            .then(data => {
+                const { availability, booked_dates, blocked_dates } = data;
+
+                datepicker.update({
+                    onRenderCell({ date, cellType }) {
+                        const formattedDate = date.toISOString().split('T')[0];
+                        const availabilityData = availability.find(d => d.date === formattedDate);
+                        const bookedBeds = booked_dates[formattedDate] || 0;
+
+                        if (cellType === 'day') {
+                            if ((selectedProductid == 17 || selectedProductid == 18) && bookedBeds > 0) {
+                                // Mark as fully booked if queen or twin room and any booking exists
+                                return {
+                                    disabled: true,
+                                    classes: 'booked-date'
+                                };
+                            }
+                            if (bookedBeds >= getMaxGuests(selectedProductid)) {
+                                return {
+                                    disabled: true,
+                                    classes: 'booked-date'
+                                };
+                            }
+                            if (availabilityData && availabilityData.availablerooms === 0) {
+                                return {
+                                    disabled: true,
+                                    classes: 'unavailable-date'
+                                };
+                            }
+                            if (blocked_dates.includes(formattedDate)) {
+                                return {
+                                    disabled: true,
+                                    classes: 'blocked-date'
+                                };
+                            }
+                        }
+                    }
+                });
+            });
+
+        updateGuestDropdown(getMaxGuests(selectedProductid));
+    });
+
+    function fetchAvailability(checkIn, checkOut) {
+        fetch(`/accommodation/availability/${selectedProductid}`)
+            .then(response => response.json())
+            .then(data => {
+                const { availability, booked_dates, blocked_dates } = data;
+
+                const dateRange = getDatesInRange(checkIn, checkOut);
+                let maxBedsAvailable = getMaxGuests(selectedProductid);
+
+                dateRange.forEach(date => {
+                    const formattedDate = date.toISOString().split('T')[0];
+                    const bookedBeds = booked_dates[formattedDate] || 0;
+                    const availableBeds = getMaxGuests(selectedProductid) - bookedBeds;
+                    if (availableBeds < maxBedsAvailable) {
+                        maxBedsAvailable = availableBeds;
+                    }
+                });
+
+                updateGuestDropdown(maxBedsAvailable);
+            });
+    }
+
+    function updateGuestDropdown(maxGuests) {
+        const numGuestsSelect = document.getElementById('num-guests');
+        numGuestsSelect.innerHTML = '';
+
+        for (let i = 1; i <= maxGuests; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `${i} Guest${i > 1 ? 's' : ''}`;
+            numGuestsSelect.appendChild(option);
+        }
+    }
+
+    function getMaxGuests(productId) {
+        switch (productId) {
+            case '17': // Queen Room
+                return 3;
+            case '18': // Twin Room
+                return 2;
+            case '16': // Dorm Room
+                return 4;
+            default:
+                return 1;
+        }
+    }
+
+    function getDatesInRange(startDate, endDate) {
+        const date = new Date(startDate);
+        const dates = [];
+
+        while (date <= new Date(endDate)) {
+            dates.push(new Date(date));
+            date.setDate(date.getDate() + 1);
+        }
+
+        return dates;
+    }
+
+    function checkAvailability() {
+        const dateRange = document.getElementById('date-range').value;
+        if (!dateRange) {
+            alert('Please select a date range.');
+            return;
+        }
+
+        const [checkIn, checkOut] = dateRange.split(' - ').map(date => {
+            const [year, month, day] = date.split('-');
+            return `${year}-${month}-${day}`;
+        });
+
+        const numGuests = document.getElementById('num-guests').value;
+        let loggedInUserId = getUserId();
+
+        if (!loggedInUserId) {
+            alert('Staff/Admin members cannot book dates. Only users can book.');
+            return;
+        }
+
+        document.getElementById('booking-confirmation').style.display = 'none';
+
+        fetch('/accommodation/check_availability', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productid: selectedProductid,
+                check_in: checkIn,
+                check_out: checkOut,
+                num_guests: numGuests
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            const summaryDiv = document.getElementById('booking-summary');
+            const detailsDiv = document.getElementById('summary-details');
+
+            let totalCost = data.total_cost;
+
+            detailsDiv.innerHTML = `<tr>
+                                        <td>${checkIn}</td>
+                                        <td>${checkOut}</td>
+                                        <td>$${totalCost}</td>
+                                    </tr>`;
+            summaryDiv.style.display = 'block';
+        });
+    }
+
+function confirmBooking() {
+    const dateRange = document.getElementById('date-range').value;
+    const [checkIn, checkOut] = dateRange.split(' - ').map(date => {
+        const [year, month, day] = date.split('-');
+        return `${year}-${month}-${day}`;
+    });
+
+    const numGuests = document.getElementById('num-guests').value;
+    let loggedInUserId = getUserId();
+
+    fetch('/accommodation/book', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            productid: selectedProductid,
+            check_in: checkIn,
+            check_out: checkOut,
+            customer_id: loggedInUserId,
+            num_beds: numGuests
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        // Store booking details in session storage
+        const bookingDetails = {
+            check_in: checkIn,
+            check_out: checkOut,
+            total_cost: data.total_cost,
+            booking_reference: data.booking_reference
+        };
+        sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+
+        // Redirect to payment page
+        window.location.href = "{{ url_for('user.payment') }}";
+    });
+}
+</script>
+
+</script>
+
+{% endblock %}

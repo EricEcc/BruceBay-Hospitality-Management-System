@@ -1,0 +1,594 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Staff Dashboard - Bruce Bay Beans and Bunks
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid flex-grow-1">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('staff.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.inventory' %}active{% endif %}" href="{{ url_for('staff.inventory') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.accommodation_management' %}active{% endif %}" href="{{ url_for('staff.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.get_menu' %}active{% endif %}" href="{{ url_for('staff.get_menu') }}">
+                            <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                            <span>Menu Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.messages' %}active{% endif %}" href="{{ url_for('staff.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.profile' %}active{% endif %}" href="{{ url_for('staff.profile') }}">
+                            <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.promotion' %}active{% endif %}" href="{{ url_for('staff.promotion') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotion Icon" class="sidebar-icon">
+                            <span>Promotion Code</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Welcome to the Staff Dashboard</h1>
+            </div>
+
+            <!-- Low Stock Alerts Section -->
+            <div id="low-stock-alerts-section" class="mb-5">
+                {% if low_stock_alerts and low_stock_alerts|length > 0 %}
+                <h2 class="section-title">Low Stock Alerts <span style="color: red;">⚠</span></h2>
+                <ul class="list-group minimalist-list">
+                    {% for alert in low_stock_alerts %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Product ID:</span>
+                            <span>{{ alert[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Product Name:</span>
+                            <span>{{ alert[1] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Current Stock:</span>
+                            <span>{{ alert[2] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Low Stock Threshold:</span>
+                            <span>{{ alert[3] }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <h2 class="section-title" style="font-weight: bold;">Low Stock Alerts</h2>
+                <p>No low stock alerts at the moment.</p>
+                {% endif %}
+            </div>
+
+            <!-- Current Orders Section -->
+            <div id="current-orders-section" class="mb-5">
+                <h2 class="section-title">Current Orders</h2>
+                
+                <!-- Order Now Section -->
+                <div id="order-now-section" class="mb-3">
+                    <h4 class="section-subtitle">Order Now:</h4>
+                    
+                    <ul class="list-group minimalist-list">
+                        {% for order in current_orders_now %}
+                        <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Order ID:</span>
+                                <span>{{ order[0] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Customer:</span>
+                                <span>{{ order[1] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Product:</span>
+                                <span>{{ order[6] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Total Price:</span>
+                                <span>${{ order[2] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Status:</span>
+                                <select class="form-select status-dropdown" data-order-id="{{ order[0] }}" data-current-status="{{ order[3] }}">
+                                    <option value="pending" {% if order[3] == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="confirmed" {% if order[3] == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                    <option value="preparing" {% if order[3] == 'preparing' %}selected{% endif %}>Preparing</option>
+                                    <option value="ready" {% if order[3] == 'ready' %}selected{% endif %}>Ready</option>
+                                    <option value="completed" {% if order[3] == 'completed' %}selected{% endif %}>Completed</option>
+                                    <option value="cancelled" {% if order[3] == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Order Date:</span>
+                                <span>{{ order[4] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Estimated Time Left:</span>
+                                <span id="timer-{{ order[0] }}" data-time="{{ order[4] }}" data-estimated-time="{{ order[5] }}" data-order-id="{{ order[0] }}" data-order-status="{{ order[3] }}">
+                                    {% if order[3] == 'pending' %}
+                                        Awaiting Confirmation
+                                    {% else %}
+                                        <!-- Timer logic for other statuses -->
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Order Later Section -->
+                <div id="order-later-section" class="mb-3">
+                    <h4 class="section-subtitle">Order Later:</h4>
+                    <ul class="list-group minimalist-list">
+                        {% for order in current_orders_later %}
+                        <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Order ID:</span>
+                                <span>{{ order[0] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Customer:</span>
+                                <span>{{ order[1] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Product:</span>
+                                <span>{{ order[8] }}</span>
+                            </div>
+                            <div class=" order-detail">
+                                <span class="item-title" style="font-weight: bold;">Total Price:</span>
+                                <span>${{ order[2] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Status:</span>
+                                <select class="form-select status-dropdown" data-order-id="{{ order[0] }}" data-current-status="{{ order[3] }}">
+                                    <option value="pending" {% if order[3] == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="confirmed" {% if order[3] == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                    <option value="preparing" {% if order[3] == 'preparing' %}selected{% endif %}>Preparing</option>
+                                    <option value="ready" {% if order[3] == 'ready' %}selected{% endif %}>Ready</option>
+                                    <option value="completed" {% if order[3] == 'completed' %}selected{% endif %}>Completed</option>
+                                    <option value="cancelled" {% if order[3] == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Order Date:</span>
+                                <span>{{ order[4] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Estimated Time Left:</span>
+                                <span id="timer-{{ order[0] }}" data-time="{{ order[4] }}" data-estimated-time="{{ order[5] }}" data-order-id="{{ order[0] }}">
+                                    {% if order[3] == 'pending' %}
+                                        Awaiting Confirmation
+                                    {% else %}
+                                        <!-- Timer logic for other statuses -->
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Schedule Date:</span>
+                                <span>{{ order[6] }}</span>
+                            </div>
+                            <div class="order-detail">
+                                <span class="item-title" style="font-weight: bold;">Schedule Time:</span>
+                                <span>{{ order[7] }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Past Orders Section -->
+            <div id="past-orders-section" class="mb-5">
+                <h2 class="section-title">Past Orders</h2>
+                <ul class="list-group minimalist-list">
+                    {% for order in past_orders %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Order ID:</span>
+                            <span>{{ order[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Customer:</span>
+                            <span>{{ order[1] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Product:</span>
+                            <span>{{ order[8] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Total Price:</span>
+                            <span>${{ order[2] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Status:</span>
+                            <span>{{ order[3] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Order Date:</span>
+                            <span>{{ order[4] }}</span>
+                        </div>
+                        {% if order[5] == 'later' %}
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Schedule Date:</span>
+                            <span>{{ order[6] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Schedule Time:</span>
+                            <span>{{ order[7] }}</span>
+                        </div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Booking Management Section -->
+            <div id="bookings-section" class="mb-5">
+                <h2 class="section-title">Current Bookings</h2>
+                <ul class="list-group minimalist-list">
+                    {% for booking in current_bookings %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Booking ID:</span>
+                            <span>{{ booking[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Booking Reference:</span>
+                            <span>{{ booking[6] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Customer:</span>
+                            <span>{{ booking[1] }}</span>
+                        </div>
+
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Check-in Date:</span>
+                            <span>{{ booking[3] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Check-out Date:</span>
+                            <span>{{ booking[4] }}</span>
+                        </div>
+                 
+
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Room Type:</span>
+                            <span>{{ booking[7] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Status:</span>
+                            <select class="form-select booking-status-dropdown" data-booking-id="{{ booking[0] }}" data-current-status="{{ booking[5] }}">
+                                <option value="booked" {% if booking[5] == 'booked' %}selected{% endif %}>Booked</option>
+                                <option value="cancelled" {% if booking[5] == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                <option value="completed" {% if booking[5] == 'completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Merchandise Orders Section -->
+            <div id="merchandise-section" class="mb-5">
+                <h2 class="section-title">Merchandise Orders</h2>
+                {% if merchandise_orders %}
+                <ul class="list-group minimalist-list">
+                    {% for order in merchandise_orders %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Order ID:</span>
+                            <span>{{ order[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Customer:</span>
+                            <span>{{ order[1] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Product:</span>
+                            <span>{{ order[5] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Total Price:</span>
+                            <span>${{ order[2] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Status:</span>
+                            <select class="form-select status-dropdown" data-order-id="{{ order[0] }}" data-current-status="{{ order[3] }}">
+                                <option value="pending" {% if order[3] == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="completed" {% if order[3] == 'completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title" style="font-weight: bold;">Order Date:</span>
+                            <span>{{ order[4] }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No merchandise orders currently.</p>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+            dropdown.addEventListener('change', function() {
+                const orderId = this.getAttribute('data-order-id');
+                const newStatus = this.value;
+                const currentStatus = this.getAttribute('data-current-status');
+
+                if (confirm(`Are you sure you want to change the status of order ${orderId} to ${newStatus}?`)) {
+                    updateOrderStatus(orderId, newStatus);
+                } else {
+                    // Revert to previous value if the action is canceled
+                    this.value = currentStatus;
+                }
+            });
+        });
+
+        document.querySelectorAll('.booking-status-dropdown').forEach(dropdown => {
+            dropdown.addEventListener('change', function() {
+                const bookingId = this.getAttribute('data-booking-id');
+                const newStatus = this.value;
+                const currentStatus = this.getAttribute('data-current-status');
+
+                if (confirm(`Are you sure you want to change the status of booking ${bookingId} to ${newStatus}?`)) {
+                    updateBookingStatus(bookingId, newStatus);
+                } else {
+                    // Revert to previous value if the action is canceled
+                    this.value = currentStatus;
+                }
+            });
+        });
+
+        function updateOrderStatus(orderId, newStatus) {
+            fetch('{{ url_for("staff.update_order_status") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ order_id: orderId, status: newStatus }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order status updated successfully!');
+                    if (newStatus === 'confirmed') {
+                        startTimer(orderId, 10);  // Start a 10-minute timer
+                    } else if (newStatus === 'ready') {
+                        updateTimerDisplay(orderId, 'Pending Pick Up');
+                    }
+                } else {
+                    alert('Failed to update order status: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error updating order status: ' + error);
+            });
+        }
+
+        function updateBookingStatus(bookingId, newStatus) {
+            fetch('{{ url_for("staff.update_booking_status") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ booking_id: bookingId, status: newStatus }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Booking status updated successfully!');
+                } else {
+                    alert('Failed to update booking status: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error updating booking status: ' + error);
+            });
+        }
+
+        function startTimer(orderId, minutes) {
+            const timerElement = document.getElementById(`timer-${orderId}`);
+            if (!timerElement) {
+                console.error(`Timer element with ID timer-${orderId} not found.`);
+                return;
+            }
+
+            const endTime = new Date().getTime() + minutes * 60 * 1000; // Set timer duration in minutes
+
+            function updateTimer() {
+                const now = new Date();
+                const timeLeft = endTime - now.getTime();
+
+                if (timeLeft > 0) {
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    timerElement.textContent = `${minutes}m ${seconds}s`;
+                } else {
+                    timerElement.textContent = "0m 0s";
+                    // Automatically update the status to 'preparing'
+                    fetch('{{ url_for("staff.update_order_status") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ order_id: orderId, status: 'preparing' }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Order status updated to preparing!');
+                            // Start next timer for 'ready' status
+                            startNextTimer(orderId, 8);  // Start an 8-minute timer for 'ready'
+                        } else {
+                            alert('Failed to update order status to preparing: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Error updating order status to preparing: ' + error);
+                    });
+                }
+            }
+
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        function startNextTimer(orderId, minutes) {
+            const timerElement = document.getElementById(`timer-${orderId}`);
+            if (!timerElement) {
+                console.error(`Timer element with ID timer-${orderId} not found.`);
+                return;
+            }
+
+            const endTime = new Date().getTime() + minutes * 60 * 1000; // Set timer duration in minutes
+
+            function updateTimer() {
+                const now = new Date();
+                const timeLeft = endTime - now.getTime();
+
+                if (timeLeft > 0) {
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    timerElement.textContent = `${minutes}m ${seconds}s`;
+                } else {
+                    timerElement.textContent = "0m 0s";
+                    // Automatically update the status to 'ready'
+                    fetch('{{ url_for("staff.update_order_status") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ order_id: orderId, status: 'ready' }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Order status updated to ready!');
+                            updateTimerDisplay(orderId, 'Pending Pick Up');
+                        } else {
+                            alert('Failed to update order status to ready: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Error updating order status to ready: ' + error);
+                    });
+                }
+            }
+
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        }
+
+        function updateTimerDisplay(orderId, message) {
+            const timerElement = document.getElementById(`timer-${orderId}`);
+            if (timerElement) {
+                timerElement.textContent = message;
+            }
+        }
+
+        document.querySelectorAll('[id^="timer-"]').forEach(timer => {
+            if (timer.textContent.trim() !== "Awaiting Confirmation") {
+                const orderDate = new Date(timer.getAttribute('data-time'));
+                const estimatedTime = parseInt(timer.getAttribute('data-estimated-time')) * 60 * 1000; // Convert minutes to milliseconds
+                const countdownEnd = new Date(orderDate.getTime() + estimatedTime);
+
+                function updateTimer() {
+                    const now = new Date();
+                    const timeLeft = countdownEnd - now;
+
+                    if (timeLeft > 0) {
+                        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                        timer.textContent = `${minutes}m ${seconds}s`;
+                    } else if (timer.getAttribute('data-order-status') === 'ready') {
+                        timer.textContent = "Pending Pick Up";
+                    } else {
+                        timer.textContent = "0m 0s";
+                    }
+                }
+
+                setInterval(updateTimer, 1000);
+                updateTimer();
+            }
+        });
+
+        function fetchLatestOrderStatuses() {
+            fetch('{{ url_for("staff.latest_order_statuses") }}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+
+                data.forEach(order => {
+                    const orderId = order[0];
+                    const newStatus = order[1];
+                    const statusElement = document.getElementById(`status-${orderId}`);
+                    
+                    if (statusElement && statusElement.textContent !== newStatus) {
+                        statusElement.textContent = newStatus;
+
+                        if (newStatus === 'preparing') {
+                            const timerElement = document.getElementById(`timer-${orderId}`);
+                            const endTime = new Date().getTime() + 10 * 60 * 1000; // 10 minutes from now
+                            startTimer(timerElement, endTime);
+                        } else if (newStatus === 'ready') {
+                            updateTimerDisplay(orderId, 'Pending Pick Up');
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching latest order statuses:', error);
+            });
+        }
+
+        setInterval(fetchLatestOrderStatuses, 1000); // Poll every 1 second
+    });
+</script>
+
+{% endblock %}

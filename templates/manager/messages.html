@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Manager Messages{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('manager.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.user_management' %}active{% endif %}" href="{{ url_for('manager.user_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/user-management-icon.png') }}" alt="User Management Icon" class="sidebar-icon">
+                            <span>User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.promotions_management' %}active{% endif %}" href="{{ url_for('manager.promotions_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotions Icon" class="sidebar-icon">
+                            <span>Promotions Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.inventory_management' %}active{% endif %}" href="{{ url_for('manager.inventory_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.accommodation_management' %}active{% endif %}" href="{{ url_for('manager.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.reporting_analytics' %}active{% endif %}" href="{{ url_for('manager.reporting_analytics') }}">
+                            <img src="{{ url_for('static', filename='images/icons/reporting-icon.png') }}" alt="Reporting Icon" class="sidebar-icon">
+                            <span>Reporting & Analytics</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.list_news' %}active{% endif %}" href="{{ url_for('manager.list_news') }}">
+                            <img src="{{ url_for('static', filename='images/icons/news-icon.png') }}" alt="News Icon" class="sidebar-icon">
+                            <span>News & Announcements</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'manager.messages' %}active{% endif %}" href="{{ url_for('manager.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Inbox</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+
+<style>
+    .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        color: #000;
+        text-decoration: none;
+    }
+    .nav-link.active {
+        background-color: #f8f9fa;
+        color: #007bff;
+        font-weight: bold;
+    }
+    .nav-link.active .sidebar-icon {
+        filter: none; /* Remove any filter if applied */
+    }
+    .sidebar-icon {
+        margin-right: 10px;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="content-section shadow p-4 mb-5 bg-white rounded">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Messages</h1>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Your Messages</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Message</th>
+                                        <th>Sent on</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="messagesList">
+                                    {% for message in messages %}
+                                    <tr>
+                                        <td>{{ message.sender_name }}</td>
+                                        <td>{{ message.receiver_name }}</td>
+                                        <td>{{ message.content }}</td>
+                                        <td>{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm reply-button" data-receiver-id="{{ message.senderid }}" data-receiver-name="{{ message.sender_name }}" data-receiver-type="{{ message.sendertype }}">Reply</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="reply-form d-none" id="reply-form-{{ message.senderid }}">
+                                        <td colspan="5">
+                                            <form class="reply-message-form">
+                                                <div class="mb-3">
+                                                    <label for="reply-content-{{ message.senderid }}" class="form-label">Your Reply:</label>
+                                                    <textarea class="form-control" id="reply-content-{{ message.senderid }}" rows="3" required></textarea>
+                                                </div>
+                                                <button type="button" class="btn btn-primary send-reply-button" data-receiver-id="{{ message.senderid }}" data-receiver-type="{{ message.sendertype }}">Send Reply</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No messages to display.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.reply-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const receiverId = this.getAttribute('data-receiver-id');
+            const replyForm = document.getElementById(`reply-form-${receiverId}`);
+            replyForm.classList.toggle('d-none');
+        });
+    });
+
+    document.querySelectorAll('.send-reply-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const receiverId = this.getAttribute('data-receiver-id');
+            const receivertype = this.getAttribute('data-receiver-type');
+            const content = document.getElementById(`reply-content-${receiverId}`).value;
+
+            fetch("{{ url_for('manager.reply_message') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ receiver_id: receiverId, content: content, receivertype: receivertype })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newMessage = document.createElement('tr');
+                    newMessage.innerHTML = `<td>You</td><td>${receivertype.charAt(0).toUpperCase() + receivertype.slice(1)}</td><td>${content}</td><td>Just now</td><td></td>`;
+                    const messagesList = document.getElementById('messagesList');
+                    messagesList.insertBefore(newMessage, messagesList.firstChild);
+                } else {
+                    alert('Failed to send reply: ' + data.error);
+                }
+            })
+            .catch(error => alert('Error: ' + error.message));
+        });
+    });
+</script>
+{% endblock %}

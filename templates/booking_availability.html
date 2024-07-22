@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Bruce Bay Beans and Bunks - Booking Availability{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="section-title text-center mb-4">Check Availability</h2>
+            <div id="calendar" class="mb-4">
+                <!-- Availability calendar will be dynamically loaded here -->
+            </div>
+            <div id="booking-form" class="mb-4">
+                <h3>Select Your Dates</h3>
+                <form>
+                    <div class="mb-3">
+                        <label for="check-in" class="form-label">Check-in Date</label>
+                        <input type="date" class="form-control" id="check-in" name="check-in">
+                    </div>
+                    <div class="mb-3">
+                        <label for="check-out" class="form-label">Check-out Date</label>
+                        <input type="date" class="form-control" id="check-out" name="check-out">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="bookRoom()">Book Now</button>
+                </form>
+            </div>
+            <div id="booking-summary" class="mb-4" style="display: none;">
+                <h3>Booking Summary</h3>
+                <table class="table table-bordered booking-summary-table">
+                    <thead>
+                        <tr>
+                            <th>Detail</th>
+                            <th>Information</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summary-details">
+                        <!-- Booking details will be inserted here -->
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-success" onclick="confirmBooking()">Check Out</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inject the user ID as a data attribute -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userIdElement = document.createElement('div');
+        userIdElement.id = 'userId';
+        userIdElement.dataset.userId = "{{ session.get('customer_id', '') }}";
+        document.body.appendChild(userIdElement);
+
+        // Set min attribute for date inputs to today's date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('check-in').setAttribute('min', today);
+        document.getElementById('check-out').setAttribute('min', today);
+    });
+</script>
+
+<script>
+    let selectedProductid = "{{ productid }}";
+    
+    function getUserId() {
+        const userIdElement = document.getElementById('userId');
+        return userIdElement ? userIdElement.dataset.userId : null;
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/accommodation/availability/' + selectedProductid)
+            .then(response => response.json())
+            .then(data => {
+                const calendarEl = document.getElementById('calendar');
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    events: data.map(date => ({
+                        title: 'Available',
+                        start: date.date,
+                        color: date.availablerooms > 0 ? 'green' : 'red'
+                    }))
+                });
+                calendar.render();
+            });
+    });
+    
+    function bookRoom() {
+        const checkIn = document.getElementById('check-in').value;
+        const checkOut = document.getElementById('check-out').value;
+        let loggedInUserId = getUserId();
+        console.log('Selected Product ID:', selectedProductid);  // Debugging
+        console.log('Logged In User ID:', loggedInUserId);  // Debugging
+
+        if (!loggedInUserId) {
+            alert('You must be logged in to book a room.');
+            return;
+        }
+
+        fetch('/accommodation/book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productid: selectedProductid,
+                check_in: checkIn,
+                check_out: checkOut,
+                customer_id: loggedInUserId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            const summaryDiv = document.getElementById('booking-summary');
+            const detailsDiv = document.getElementById('summary-details');
+            detailsDiv.innerHTML = `
+                <tr>
+                    <td>Check-in</td>
+                    <td>${data.check_in}</td>
+                </tr>
+                <tr>
+                    <td>Check-out</td>
+                    <td>${data.check_out}</td>
+                </tr>
+                <tr>
+                    <td>Total Cost</td>
+                    <td>$${data.total_cost}</td>
+                </tr>
+                <tr>
+                    <td>Booking Reference</td>
+                    <td>${data.booking_reference}</td>
+                </tr>`;
+            summaryDiv.style.display = 'block';
+        });
+    }
+    
+    function confirmBooking() {
+        window.location.href = "{{ url_for('user.payment') }}";
+    }
+</script>
+
+{% endblock %}

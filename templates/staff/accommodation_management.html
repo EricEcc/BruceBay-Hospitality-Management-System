@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Accommodation Management - Bruce Bay Beans and Bunks
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row">
+        <!-- Staff Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('staff.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.inventory' %}active{% endif %}" href="{{ url_for('staff.inventory') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.accommodation_management' %}active{% endif %}" href="{{ url_for('staff.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.get_menu' %}active{% endif %}" href="{{ url_for('staff.get_menu') }}">
+                            <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                            <span>Menu Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.messages' %}active{% endif %}" href="{{ url_for('staff.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Messages</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.profile' %}active{% endif %}" href="{{ url_for('staff.profile') }}">
+                            <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.promotion' %}active{% endif %}" href="{{ url_for('staff.promotion') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotion Icon" class="sidebar-icon">
+                            <span>Promotion Code</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+
+<div class="container mt-5">
+    <h1 class="h2 text-center">Accommodation Management</h1>
+    <p class="text-center">Use the calendar below to view the availability of accommodations. Dates marked in red are fully booked and unavailable for new bookings.</p>
+
+    <!-- Dropdown to select room type -->
+    <div class="text-center mb-4">
+        <select id="roomType" class="form-select" style="max-width: 300px; margin: 0 auto;">
+            <option value="">Select Room Type</option>
+            <option value="1">Dorm Room</option>
+            <option value="2">Queen Room</option>
+            <option value="3">Twin Room</option>
+        </select>
+    </div>
+
+    <!-- Selected Room Title -->
+    <div id="selectedRoomTitleContainer" class="text-center mb-4 p-3 shadow-sm" style="background-color: #f8f9fa; border-radius: 5px;">
+        <h2 id="selectedRoomTitle" class="text-primary">Current Room: Twin Room</h2>
+    </div>
+
+    <!-- FullCalendar container -->
+    <div id="calendar" class="my-4" style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"></div>
+</div>
+
+<!-- Include FullCalendar CSS and JS -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        let calendar = null;
+
+        const loadBookings = (roomId) => {
+            fetch('{{ url_for("staff.get_bookings") }}')
+                .then(response => response.json())
+                .then(bookedDates => {
+                    const events = [];
+
+                    if (roomId === 1) {  // Dorm Room Logic
+                        const aggregatedBookings = bookedDates.reduce((acc, booking) => {
+                            if (booking.accommodation_id === roomId) {
+                                const date = booking.date;
+                                if (!acc[date]) {
+                                    acc[date] = 0;
+                                }
+                                acc[date] += booking.num_beds;
+                            }
+                            return acc;
+                        }, {});
+
+                        for (const date in aggregatedBookings) {
+                            const bedsLeft = 4 - aggregatedBookings[date];  // Assuming 4 beds in the dorm room
+                            events.push({
+                                start: date,
+                                end: date,
+                                display: 'background',
+                                backgroundColor: bedsLeft > 0 ? 'orange' : 'red',
+                                borderColor: bedsLeft > 0 ? 'orange' : 'red',
+                                title: bedsLeft > 0 ? `${bedsLeft} bed(s) left` : '',
+                                classNames: bedsLeft > 0 ? 'beds-left-event' : ''
+                            });
+                        }
+                    } else {  // Queen Room and Twin Room Logic
+                        bookedDates.forEach(booking => {
+                            if (booking.accommodation_id === roomId) {
+                                events.push({
+                                    start: booking.date,
+                                    end: booking.date,
+                                    display: 'background',
+                                    backgroundColor: 'red',
+                                    borderColor: 'red'
+                                });
+                            }
+                        });
+                    }
+
+                    if (calendar) {
+                        calendar.destroy();
+                    }
+
+                    calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'dayGridMonth',
+                        events: events,
+                        eventContent: function(arg) {
+                            if (arg.event.classNames.includes('beds-left-event')) {
+                                return {
+                                    html: `<div class="beds-left-text">${arg.event.title}</div>`
+                                };
+                            }
+                        }
+                    });
+
+                    calendar.render();
+                })
+                .catch(error => console.error('Error fetching booking data:', error));
+        };
+
+        const roomTypeSelect = document.getElementById('roomType');
+
+        // Load the last selected room type from local storage
+        const lastSelectedRoom = localStorage.getItem('lastSelectedRoom');
+        if (lastSelectedRoom) {
+            roomTypeSelect.value = lastSelectedRoom;
+            loadBookings(parseInt(lastSelectedRoom));
+        }
+
+        roomTypeSelect.addEventListener('change', function() {
+            const roomId = parseInt(this.value);
+            if (!isNaN(roomId)) {
+                // Save the selected room type to local storage
+                localStorage.setItem('lastSelectedRoom', roomId);
+                loadBookings(roomId);
+
+                // Update the selected room title
+                const roomName = roomTypeSelect.options[roomTypeSelect.selectedIndex].text;
+                document.getElementById('selectedRoomTitle').textContent = `Current Room: ${roomName}`;
+            }
+        });
+    });
+</script>
+
+{% endblock %}

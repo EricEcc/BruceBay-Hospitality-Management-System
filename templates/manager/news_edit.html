@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Edit News{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="mb-0">Edit News</h1>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('manager.edit_news', news_id=news[0]) }}" method="post">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ news[1] }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" id="content" name="content" rows="5" required>{{ news[2] }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="published_at" class="form-label">Published At</label>
+                            <input type="datetime-local" class="form-control" id="published_at" name="published_at" value="{{ news[3].strftime('%Y-%m-%dT%H:%M') if news[3] }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update News</button>
+                        <a href="{{ url_for('manager.list_news') }}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    });
+</script>
+{% endblock %}

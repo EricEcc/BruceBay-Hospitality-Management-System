@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Manage Orders and Bookings - Bruce Bay Beans and Bunks
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <h2>Manage Your Orders and Bookings</h2>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="alert alert-dismissible fade show" role="alert">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Orders Section -->
+    <div id="orders-section" class="mb-5">
+        <h3>Your Past Orders</h3>
+        <ul class="list-group minimalist-list">
+            {% for order in orders %}
+            <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                <div class="order-detail">
+                    <span class="item-title" style="font-weight: bold;">Order ID:</span>
+                    <span>{{ order['orderid'] }}</span>
+                </div>
+                <div class="order-detail">
+                    <span class="item-title" style="font-weight: bold;">Total Price:</span>
+                    <span>${{ order['totalprice'] }}</span>
+                </div>
+                <div class="order-detail">
+                    <span class="item-title" style="font-weight: bold;">Status:</span>
+                    <span>{{ order['status'] }}</span>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="reorder('{{ order['orderid']|tojson|e }}')">Re-order</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Bookings Section -->
+    <div id="bookings-section" class="mb-5">
+        <h3>Your Bookings</h3>
+        <ul class="list-group minimalist-list">
+            {% for booking in bookings %}
+            <li class="list-group-item order-item d-flex justify-content-between align-items-center">
+                <div class="order-detail">
+                    <span class="item-title" style="font-weight: bold;">Booking ID:</span>
+                    <span>{{ booking['bookingid'] }}</span>
+                </div>
+                <div class="order-detail">
+                    <span class="item-title" style="font-weight: bold;">Accommodation:</span>
+                    <span>{{ booking['product_name'] }}</span>
+                </div>
+                <div class="order-detail">
+                    <span class="item-title" style="font-weight: bold;">Check-in Date:</span>
+                    <span>{{ booking['checkindate'] }}</span>
+                </div>
+                <div class="order-detail">
+                    <span class="item-title" style="font-weight: bold;">Check-out Date:</span>
+                    <span>{{ booking['checkoutdate'] }}</span>
+                </div>
+                <div class="order-detail">
+                    <span class="item-title" style="font-weight: bold;">Status:</span>
+                    <span>{{ booking['status'] }}</span>
+                </div>
+                <button class="btn btn-success btn-sm" onclick="showModifyModal('{{ booking['bookingid'] }}', '{{ booking['checkindate'] }}', '{{ booking['checkoutdate'] }}', '{{ booking['accommodationid'] }}')">Modify</button>
+                <button class="btn btn-danger btn-sm" onclick="cancelBooking('{{ booking['bookingid'] }}')">Cancel</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modifyModalLabel">Modify Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="modifyForm">
+                    <div class="mb-3">
+                        <label for="accommodationSelect" class="form-label">Accommodation:</label>
+                        <select class="form-control" id="accommodationSelect" name="new_accommodation_id" required>
+                            {% for accommodation in accommodations %}
+                            <option value="{{ accommodation['accommodationid'] }}">{{ accommodation['name'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="checkinDate" class="form-label">New Check-in Date:</label>
+                        <input type="date" class="form-control" id="checkinDate" name="new_checkin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="checkoutDate" class="form-label">New Check-out Date:</label>
+                        <input type="date" class="form-control" id="checkoutDate" name="new_checkout" required>
+                    </div>
+                    <input type="hidden" id="bookingId" name="booking_id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="submitModifyForm()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function reorder(orderId) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("user.reorder") }}';
+        const orderIdInput = document.createElement('input');
+        orderIdInput.type = 'hidden';
+        orderIdInput.name = 'order_id';
+        orderIdInput.value = orderId;
+        form.appendChild(orderIdInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function showModifyModal(bookingId, checkinDate, checkoutDate, accommodationId) {
+        document.getElementById('bookingId').value = bookingId;
+        document.getElementById('checkinDate').value = checkinDate;
+        document.getElementById('checkoutDate').value = checkoutDate;
+        document.getElementById('accommodationSelect').value = accommodationId;
+        const modifyModal = new bootstrap.Modal(document.getElementById('modifyModal'));
+        modifyModal.show();
+    }
+
+    function submitModifyForm() {
+        const form = document.getElementById('modifyForm');
+        const checkinDate = document.getElementById('checkinDate').value;
+        const checkoutDate = document.getElementById('checkoutDate').value;
+        const accommodationId = document.getElementById('accommodationSelect').value;
+        const today = new Date().toISOString().split('T')[0];
+
+        if (checkinDate < today) {
+            alert('Check-in date cannot be in the past.');
+            return;
+        }
+
+        if (checkoutDate <= checkinDate) {
+            alert('Check-out date must be later than check-in date.');
+            return;
+        }
+
+        fetch('/manager/get_blocked_dates')
+        .then(response => response.json())
+        .then(blockedDates => {
+            const checkin = new Date(checkinDate);
+            const checkout = new Date(checkoutDate);
+            for (let date of blockedDates) {
+                const blockedStart = new Date(date.start_date);
+                const blockedEnd = new Date(date.end_date);
+                if ((checkin >= blockedStart && checkin <= blockedEnd) || (checkout >= blockedStart && checkout <= blockedEnd)) {
+                    alert('Selected dates include blocked dates and cannot be booked.');
+                    return;
+                }
+            }
+            console.log('Submitting form with data:', {
+                booking_id: form.booking_id.value,
+                new_accommodation_id: form.new_accommodation_id.value,
+                new_checkin: form.new_checkin.value,
+                new_checkout: form.new_checkout.value
+            });
+            form.method = 'POST';
+            form.action = '{{ url_for("user.modify_booking") }}';
+            form.submit();
+        });
+    }
+
+    function cancelBooking(bookingId) {
+        if (confirm('Are you sure you want to cancel this booking?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ url_for("user.cancel_booking") }}';
+            const bookingIdInput = document.createElement('input');
+            bookingIdInput.type = 'hidden';
+            bookingIdInput.name = 'booking_id';
+            bookingIdInput.value = bookingId;
+            form.appendChild(bookingIdInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}

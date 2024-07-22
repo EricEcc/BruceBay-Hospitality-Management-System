@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h2 class="text-center">Payment Information</h2>
+                    {% if success %}
+                    <div class="alert alert-success text-center">
+                        Payment information received and stored successfully.
+                    </div>
+                    {% endif %}
+                    <form action="{{ url_for('user.submit_payment') }}" method="POST">
+                        <div class="form-group">
+                            <label for="orderCheckboxes"><strong>Order IDs</strong></label>
+                            <div id="orderCheckboxes">
+                                {% for order in orders %}
+                                <div class="form-check">
+                                    <input class="form-check-input order-checkbox" type="checkbox" 
+                                           value="{{ order[0] }}" data-price="{{ order[1] }}" id="order{{ order[0] }}" name="orderIDs">
+                                    <label class="form-check-label" for="order{{ order[0] }}">
+                                        Order ID: {{ order[0] }} (Price: ${{ order[1] }})
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="totalPrice"><strong>Total Price</strong></label>
+                            <input type="text" id="totalPrice" class="form-control" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardType"><strong>Card Type</strong></label>
+                            <input type="text" id="cardType" name="cardType" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardNumber"><strong>Card Number</strong></label>
+                            <input type="text" id="cardNumber" name="cardNumber" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nameOnCard"><strong>Name on Card</strong></label>
+                            <input type="text" id="nameOnCard" name="nameOnCard" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expiryDate"><strong>Expiry Date</strong></label>
+                            <input type="text" id="expiryDate" name="expiryDate" class="form-control" placeholder="MM/YY" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv"><strong>CVV</strong></label>
+                            <input type="text" id="cvv" name="cvv" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="billingAddress"><strong>Billing Address</strong></label>
+                            <textarea id="billingAddress" name="billingAddress" class="form-control" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block mt-4">Submit Payment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelectorAll('.order-checkbox').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+        var selectedOptions = Array.from(document.querySelectorAll('.order-checkbox:checked'));
+        var totalPrice = selectedOptions.reduce(function(sum, checkbox) {
+            return sum + parseFloat(checkbox.getAttribute('data-price'));
+        }, 0);
+        document.getElementById('totalPrice').value = totalPrice.toFixed(2);
+    });
+});
+</script>
+{% endblock %}

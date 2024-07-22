@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Contact Us - Bruce Bay Beans and Bunks{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-5">
+
+    <!-- Contact Us Section -->
+    <div class="row justify-content-center mt-5">
+        
+        <!-- Main content -->
+        <div class="col-md-9 col-lg-8">
+            <div class="content-section shadow p-4 mb-5 bg-white rounded">
+                <h2 class="text-center mb-4">Contact Us</h2>
+                <p>If you have any questions or need more information, feel free to reach out to us. We're here to help!</p>
+
+                <h3 class="mt-4">Contact Information</h3>
+                <p>Email: info@brucebaybeansandbunks.com</p>
+                <p>Phone: 123-456-7890</p>
+                <p>Address: Haast Highway, Bruce Bay, West Coast, New Zealand</p>
+
+                <h3 class="mt-4">Our Location</h3>
+                <div id="map" style="height: 400px; background: url('{{ url_for('static', filename='images/fakemap.png') }}') no-repeat center center; background-size: cover;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

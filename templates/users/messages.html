@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Bruce Bay Beans and Bunks - Messages{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="content-section shadow p-4 mb-5 bg-white rounded">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Messages</h1>
+                </div>
+
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Send a Message</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="messageForm">
+                            <div class="mb-3">
+                                <label for="receivertype" class="form-label">Recipient Type:</label>
+                                <select id="receivertype" name="receivertype" class="form-select" required>
+                                    <option value="staff">Staff</option>
+                                    <option value="manager">Manager</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Message:</label>
+                                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5>Your Messages</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Message</th>
+                                        <th>Sent on</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="messagesList">
+                                    {% for message in messages %}
+                                    <tr>
+                                        <td>{{ message.sender_name }}</td>
+                                        <td>{{ message.receiver_name }}</td>
+                                        <td>{{ message.content }}</td>
+                                        <td>{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm reply-button" data-receiver-id="{{ message.senderid }}" data-receiver-name="{{ message.sender_name }}" data-receiver-type="{{ message.sendertype }}">Reply</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="reply-form d-none" id="reply-form-{{ message.senderid }}">
+                                        <td colspan="5">
+                                            <form class="reply-message-form">
+                                                <div class="mb-3">
+                                                    <label for="reply-content-{{ message.senderid }}" class="form-label">Your Reply:</label>
+                                                    <textarea class="form-control" id="reply-content-{{ message.senderid }}" rows="3" required></textarea>
+                                                </div>
+                                                <button type="button" class="btn btn-primary send-reply-button" data-receiver-id="{{ message.senderid }}" data-receiver-type="{{ message.sendertype }}">Send Reply</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No messages to display.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('messageForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const receivertype = document.getElementById('receivertype').value;
+        const content = document.getElementById('content').value;
+
+        fetch("{{ url_for('user.messages') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ receivertype: receivertype, content: content })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const newMessage = document.createElement('tr');
+                newMessage.innerHTML = `<td>You</td><td>${receivertype.charAt(0).toUpperCase() + receivertype.slice(1)}</td><td>${content}</td><td>Just now</td><td></td>`;
+                const messagesList = document.getElementById('messagesList');
+                messagesList.insertBefore(newMessage, messagesList.firstChild);
+                document.getElementById('content').value = ''; // Clear the textarea after sending
+            } else {
+                alert('Failed to send message: ' + data.error);
+            }
+        })
+        .catch(error => alert('Error: ' + error.message));
+    });
+
+    document.querySelectorAll('.reply-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const receiverId = this.getAttribute('data-receiver-id');
+            const replyForm = document.getElementById(`reply-form-${receiverId}`);
+            replyForm.classList.toggle('d-none');
+        });
+    });
+
+    document.querySelectorAll('.send-reply-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const receiverId = this.getAttribute('data-receiver-id');
+            const receivertype = this.getAttribute('data-receiver-type');
+            const content = document.getElementById(`reply-content-${receiverId}`).value;
+
+            fetch("{{ url_for('user.reply_message') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ receiver_id: receiverId, receiver_type: receivertype, content: content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const newMessage = document.createElement('tr');
+                    newMessage.innerHTML = `<td>You</td><td>${receiver_name}</td><td>${content}</td><td>Just now</td><td></td>`;
+                    const messagesList = document.getElementById('messagesList');
+                    messagesList.insertBefore(newMessage, messagesList.firstChild);
+                } else {
+                    alert('Failed to send reply: ' + data.error);
+                }
+            })
+            .catch(error => alert('Error: ' + error.message));
+        });
+    });
+</script>
+{% endblock %}

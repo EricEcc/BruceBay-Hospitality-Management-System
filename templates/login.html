@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-body p-5">
+                    <form id="loginForm" method="POST" action="{{ url_for('user.login') }}">
+                        <h3 class="mb-4 text-center">LOG IN</h3>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                          {% if messages %}
+                            <div class="alert alert-dismissible fade show" role="alert">
+                              {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                              {% endfor %}
+                            </div>
+                          {% endif %}
+                        {% endwith %}
+                        <div class="form-group mb-4">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control border-0 border-bottom" id="username" name="username" pattern="^[A-Za-z]+$" required>
+                            <div class="invalid-feedback">Username should only contain letters.</div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control border-0 border-bottom" id="password" name="password" required>
+                            <div class="invalid-feedback">Please enter your password.</div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-primary" style="background-color: #00796B; width: 48%;">Sign In</button>
+                            <button onclick="location.href='{{ url_for('user.register')}}' " type="button" class="btn btn-primary" style="width: 48%; background-color: #00796B;">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    // Form validation using JavaScript
+    const form = document.getElementById('loginForm');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (form.checkValidity()) {
+            // Submit form if valid
+            form.submit();
+        } else {
+            // Show validation feedback
+            const inputs = form.querySelectorAll('.form-control');
+            inputs.forEach(function(input) {
+                if (!input.checkValidity()) {
+                    const feedback = input.nextElementSibling;
+                    if (input.id === 'username') {
+                        feedback.textContent = 'Username should only contain letters.';
+                    } else if (input.id === 'password') {
+                        feedback.textContent = 'Please enter your password.';
+                    } else {
+                        feedback.textContent = input.validationMessage;
+                    }
+                    input.classList.add('is-invalid');
+                }
+            });
+        }
+    });
+
+    // Reset validation feedback on input
+    form.addEventListener('input', function(event) {
+        const input = event.target;
+        const feedback = input.nextElementSibling;
+        if (input.checkValidity()) {
+            feedback.textContent = '';
+            input.classList.remove('is-invalid');
+        } else {
+            if (input.id === 'username') {
+                feedback.textContent = 'Username should only contain letters.';
+            } else if (input.id === 'password') {
+                feedback.textContent = 'Please enter your password.';
+            } else {
+                feedback.textContent = input.validationMessage;
+            }
+            input.classList.add('is-invalid');
+        }
+    });
+</script>
+{% endblock %}

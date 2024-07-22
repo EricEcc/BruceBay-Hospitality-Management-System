@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Bruce Bay Beans and Bunks - Menu Management
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid flex-grow-1">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.dashboard' %}active{% endif %}" aria-current="page" href="{{ url_for('staff.dashboard') }}">
+                            <img src="{{ url_for('static', filename='images/icons/dashboard-icon.png') }}" alt="Dashboard Icon" class="sidebar-icon">
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.inventory' %}active{% endif %}" href="{{ url_for('staff.inventory') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inventory-icon.png') }}" alt="Inventory Icon" class="sidebar-icon">
+                            <span>Inventory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.accommodation_management' %}active{% endif %}" href="{{ url_for('staff.accommodation_management') }}">
+                            <img src="{{ url_for('static', filename='images/icons/accommodation-icon.png') }}" alt="Accommodation Icon" class="sidebar-icon">
+                            <span>Accommodation Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.get_menu' %}active{% endif %}" href="{{ url_for('staff.get_menu') }}">
+                            <img src="{{ url_for('static', filename='images/icons/menu-icon.png') }}" alt="Menu Icon" class="sidebar-icon">
+                            <span>Menu Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.messages' %}active{% endif %}" href="{{ url_for('staff.messages') }}">
+                            <img src="{{ url_for('static', filename='images/icons/inbox-logo.png') }}" alt="Inbox Icon" class="sidebar-icon">
+                            <span>Messages</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.profile' %}active{% endif %}" href="{{ url_for('staff.profile') }}">
+                            <img src="{{ url_for('static', filename='images/icons/profile-icon.png') }}" alt="Profile Icon" class="sidebar-icon">
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'staff.promotion' %}active{% endif %}" href="{{ url_for('staff.promotion') }}">
+                            <img src="{{ url_for('static', filename='images/icons/promotions-icon.png') }}" alt="Promotion Icon" class="sidebar-icon">
+                            <span>Promotion Code</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-content col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Menu Management</h1>
+            </div>
+
+            <div id="menu-section" class="mb-5">
+                <h2 class="section-title">Manage Menu</h2>
+                <ul class="list-group minimalist-list">
+                    {% for product in products %}
+                    <li class="list-group-item order-item d-flex justify-content-between align-items-center" id="row-{{ product[0] }}">
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Product ID:</strong></span>
+                            <span>{{ product[0] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Name:</strong></span>
+                            <span>{{ product[1] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Description:</strong></span>
+                            <span>{{ product[2] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Category:</strong></span>
+                            <span>{{ product[3] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Price:</strong></span>
+                            <span>{{ product[4] }}</span>
+                        </div>
+                        <div class="order-detail">
+                            <span class="item-title"><strong>Image:</strong></span>
+                            <img src="{{ url_for('static', filename='images/products/' ~ (product[5] if product[5] else 'default.png')) }}" alt="{{ product[1] }}" width="50">
+                        </div>
+                        <div class="order-detail">
+                            <button class="btn btn-primary" onclick="editProduct('{{ product[0] }}')">Edit</button>
+                            <form action="{{ url_for('staff.delete_product', productid=product[0]) }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <h2>Add New Product</h2>
+            <form action="{{ url_for('staff.add_product') }}" method="post" class="mb-5" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name:</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <textarea id="description" name="description" class="form-control" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category:</label>
+                    <select id="category" name="category" class="form-control" required>
+                        <option value="food">Food</option>
+                        <option value="drink">Drink</option>
+                        <option value="merchandise">Merchandise</option>
+                        <option value="accommodation">Accommodation</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price:</label>
+                    <input type="number" id="price" name="price" class="form-control" step="0.01" required>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Image:</label>
+                    <input type="file" id="image" name="image" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Product</button>
+            </form>
+
+            <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editProductForm" action="" method="post" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="edit-name" class="form-label">Name:</label>
+                                    <input type="text" id="edit-name" name="name" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit-description" class="form-label">Description:</label>
+                                    <textarea id="edit-description" name="description" class="form-control" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit-category" class="form-label">Category:</label>
+                                    <select id="edit-category" name="category" class="form-control" required>
+                                        <option value="food">Food</option>
+                                        <option value="drink">Drink</option>
+                                        <option value="merchandise">Merchandise</option>
+                                        <option value="accommodation">Accommodation</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit-price" class="form-label">Price:</label>
+                                    <input type="number" id="edit-price" name="price" class="form-control" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="edit-image" class="form-label">Image:</label>
+                                    <input type="file" id="edit-image" name="image" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+function editProduct(productId) {
+    $.get('/staff/menu/' + productId, function(data) {
+        $('#editProductForm').attr('action', '/staff/menu/update/' + productId);
+        $('#edit-name').val(data[1]);
+        $('#edit-description').val(data[2]);
+        $('#edit-category').val(data[3]);
+        $('#edit-price').val(data[4]);
+        $('#editProductModal').modal('show');
+    });
+}
+</script>
+{% endblock %}
